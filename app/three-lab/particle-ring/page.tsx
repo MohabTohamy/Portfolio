@@ -77,4 +77,6 @@ const Point = ({ position, color }: PointProps) => {
             />
         </Sphere>
     );
+};
+
 export default ParticleRingPage;

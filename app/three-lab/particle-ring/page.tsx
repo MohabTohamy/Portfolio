@@ -14,6 +14,7 @@ const ParticleRingPage = () => {
             <Canvas
                 camera={{
                     position: [10, -7.5, -5],
+                    fov: 75,
                 }}
                 style={{ height: '100vh' }}
                 className="bg-slate-900"
@@ -46,6 +47,8 @@ const PointCircle = () => {
     useFrame(({ clock }) => {
         if (ref.current?.rotation) {
             ref.current.rotation.z = clock.getElapsedTime() * 0.05;
+            ref.current.rotation.y = clock.getElapsedTime() * 0.03;
+            ref.current.rotation.x = clock.getElapsedTime() * 0.02;
         }
     });
 
@@ -68,11 +71,11 @@ interface PointProps {
 
 const Point = ({ position, color }: PointProps) => {
     return (
-        <Sphere position={position} args={[0.1, 10, 10]}>
+        <Sphere position={position} args={[0.08, 8, 8]}>
             <meshStandardMaterial
                 emissive={color}
-                emissiveIntensity={0.5}
-                roughness={0.5}
+                emissiveIntensity={0.6}
+                roughness={0.4}
                 color={color}
             />
         </Sphere>

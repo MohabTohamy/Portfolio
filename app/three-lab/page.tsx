@@ -40,7 +40,7 @@ export default function ThreeLabPage() {
 
         window.addEventListener('scroll', handleScroll);
         window.addEventListener('mousemove', handleMouseMove);
-        
+
         return () => {
             window.removeEventListener('scroll', handleScroll);
             window.removeEventListener('mousemove', handleMouseMove);
@@ -52,14 +52,14 @@ export default function ThreeLabPage() {
             {/* Scroll Progress Rocket */}
             <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-2">
                 <div className="relative h-64 w-1 bg-slate-700 rounded-full overflow-hidden">
-                    <div 
+                    <div
                         className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-cyan-500 to-blue-500 transition-all duration-300"
                         style={{ height: `${scrollProgress}%` }}
                     />
                 </div>
-                <div 
+                <div
                     className="absolute transition-all duration-300"
-                    style={{ 
+                    style={{
                         top: `calc(${scrollProgress}% - 12px)`,
                         transform: 'translateY(-50%)'
                     }}
@@ -72,7 +72,7 @@ export default function ThreeLabPage() {
             {/* Hero Section with Scroll Indicator */}
             <Section className="min-h-screen flex items-center justify-center relative overflow-hidden">
                 {/* Parallax Background */}
-                <div 
+                <div
                     className="absolute inset-0 transition-transform duration-300 ease-out"
                     style={{
                         transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`,
@@ -84,7 +84,7 @@ export default function ThreeLabPage() {
                         <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-pulse delay-150" />
                     </div>
                 </div>
-                
+
                 <div className="text-center relative z-10">
                     <SectionTitle subtitle="Scroll-based 3D visualization and engineering simulations">
                         3D Engineering Lab
@@ -174,7 +174,7 @@ export default function ThreeLabPage() {
                                         <div className="absolute top-1/4 left-1/4 w-24 h-24 bg-blue-500 rounded-full blur-2xl animate-pulse delay-75" />
                                     </div>
                                 </div>
-                                
+
                                 <div className="relative p-8 backdrop-blur-sm">
                                     <div className="flex items-center gap-3 mb-4">
                                         <Sparkles className="w-8 h-8 text-cyan-400" />
@@ -183,7 +183,7 @@ export default function ThreeLabPage() {
                                         </h3>
                                     </div>
                                     <p className="text-slate-300 mb-6 leading-relaxed">
-                                        Rotating particle system forming mesmerizing concentric rings. 
+                                        Rotating particle system forming mesmerizing concentric rings.
                                         Interactive orbit controls with smooth animations.
                                     </p>
                                     <div className="flex gap-2 flex-wrap mb-4">
@@ -256,7 +256,7 @@ export default function ThreeLabPage() {
                                         <div className="absolute top-1/3 right-1/4 w-24 h-24 bg-pink-500 rounded-full blur-2xl animate-pulse delay-100" />
                                     </div>
                                 </div>
-                                
+
                                 <div className="relative p-8 backdrop-blur-sm">
                                     <div className="flex items-center gap-3 mb-4">
                                         <BoxSelect className="w-8 h-8 text-purple-400" />
@@ -265,7 +265,7 @@ export default function ThreeLabPage() {
                                         </h3>
                                     </div>
                                     <p className="text-slate-300 mb-6 leading-relaxed">
-                                        FWD deflection basins, stress distribution analysis, 
+                                        FWD deflection basins, stress distribution analysis,
                                         interactive product designs, and real-time simulations coming soon!
                                     </p>
                                     <div className="flex gap-2 flex-wrap">

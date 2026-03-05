@@ -20,6 +20,8 @@ export default function ThreeLabPage() {
     const section2Ref = useRef<HTMLDivElement>(null);
     const section3Ref = useRef<HTMLDivElement>(null);
     const section4Ref = useRef<HTMLDivElement>(null);
+    const particleCardRef = useRef<HTMLDivElement>(null);
+    const moreCardRef = useRef<HTMLDivElement>(null);
     const [scrollProgress, setScrollProgress] = useState(0);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -41,9 +43,59 @@ export default function ThreeLabPage() {
         window.addEventListener('scroll', handleScroll);
         window.addEventListener('mousemove', handleMouseMove);
 
+        // Animate preview cards from back to front
+        if (particleCardRef.current) {
+            gsap.fromTo(
+                particleCardRef.current,
+                {
+                    scale: 0,
+                    z: -200,
+                    opacity: 0,
+                },
+                {
+                    scale: 1,
+                    z: 0,
+                    opacity: 1,
+                    duration: 1,
+                    ease: 'back.out(1.7)',
+                    scrollTrigger: {
+                        trigger: particleCardRef.current,
+                        start: 'top 80%',
+                        end: 'top 50%',
+                        scrub: 1,
+                    },
+                }
+            );
+        }
+
+        if (moreCardRef.current) {
+            gsap.fromTo(
+                moreCardRef.current,
+                {
+                    scale: 0,
+                    z: -200,
+                    opacity: 0,
+                },
+                {
+                    scale: 1,
+                    z: 0,
+                    opacity: 1,
+                    duration: 1,
+                    ease: 'back.out(1.7)',
+                    scrollTrigger: {
+                        trigger: moreCardRef.current,
+                        start: 'top 80%',
+                        end: 'top 50%',
+                        scrub: 1,
+                    },
+                }
+            );
+        }
+
         return () => {
             window.removeEventListener('scroll', handleScroll);
             window.removeEventListener('mousemove', handleMouseMove);
+            ScrollTrigger.getAll().forEach(trigger => trigger.kill());
         };
     }, []);
 
@@ -165,7 +217,7 @@ export default function ThreeLabPage() {
                     </div>
 
                     {/* Preview Card - Particle Ring */}
-                    <div className="h-screen flex items-center justify-center px-8">
+                    <div ref={particleCardRef} className="h-screen flex items-center justify-center px-8">
                         <Link href="/three-lab/particle-ring" className="pointer-events-auto group">
                             <div className="relative overflow-hidden rounded-2xl border-2 border-cyan-500/30 hover:border-cyan-500/60 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/20">
                                 <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -247,7 +299,7 @@ export default function ThreeLabPage() {
                     </div>
 
                     {/* Preview Card - More Coming Soon */}
-                    <div className="h-screen flex items-center justify-center px-8">
+                    <div ref={moreCardRef} className="h-screen flex items-center justify-center px-8">
                         <div className="pointer-events-auto">
                             <div className="relative overflow-hidden rounded-2xl border-2 border-purple-500/30 hover:border-purple-500/60 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
                                 <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-purple-900/20 to-slate-900">
@@ -316,7 +368,7 @@ export default function ThreeLabPage() {
                     Traditional 3D Viewers
                 </h3>
 
-                <div className="grid lg:grid-cols-2 gap-6">
+                <div className="max-w-xl mx-auto">
                     {/* Rotating Cube Demo */}
                     <Card>
                         <div className="flex items-center gap-2 mb-4">
@@ -336,30 +388,6 @@ export default function ThreeLabPage() {
                                     <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
                                     <pointLight position={[-10, -10, -10]} />
                                     <RotatingCube />
-                                    <OrbitControls />
-                                </Suspense>
-                            </Canvas>
-                        </div>
-                    </Card>
-
-                    {/* Pavement Layers */}
-                    <Card>
-                        <div className="flex items-center gap-2 mb-4">
-                            <LayersIcon className="w-5 h-5 text-accent" />
-                            <h3 className="text-xl font-semibold text-foreground">
-                                Pavement Structure
-                            </h3>
-                        </div>
-                        <p className="text-foreground/70 mb-4 text-sm">
-                            3D representation of pavement layers: asphalt, base, subbase, and
-                            subgrade.
-                        </p>
-                        <div className="h-96 bg-linear-to-br from-background to-card rounded-lg overflow-hidden">
-                            <Canvas camera={{ position: [5, 5, 5], fov: 50 }}>
-                                <Suspense fallback={null}>
-                                    <ambientLight intensity={0.5} />
-                                    <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-                                    <PavementLayers />
                                     <OrbitControls />
                                 </Suspense>
                             </Canvas>

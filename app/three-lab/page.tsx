@@ -300,12 +300,12 @@ export default function ThreeLabPage() {
 
                     {/* Preview Card - More Coming Soon */}
                     <div ref={moreCardRef} className="h-screen flex items-center justify-center px-8">
-                        <div className="pointer-events-auto">
+                        <div className="pointer-events-auto group">
                             <div className="relative overflow-hidden rounded-2xl border-2 border-purple-500/30 hover:border-purple-500/60 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
-                                <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-purple-900/20 to-slate-900">
+                                <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
                                     <div className="absolute inset-0 opacity-30">
                                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-500 rounded-full blur-3xl animate-pulse" />
-                                        <div className="absolute top-1/3 right-1/4 w-24 h-24 bg-pink-500 rounded-full blur-2xl animate-pulse delay-100" />
+                                        <div className="absolute top-1/4 left-1/4 w-24 h-24 bg-pink-500 rounded-full blur-2xl animate-pulse delay-75" />
                                     </div>
                                 </div>
 
@@ -320,14 +320,25 @@ export default function ThreeLabPage() {
                                         FWD deflection basins, stress distribution analysis,
                                         interactive product designs, and real-time simulations coming soon!
                                     </p>
-                                    <div className="flex gap-2 flex-wrap">
+                                    <div className="flex gap-2 flex-wrap mb-4">
                                         <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm border border-purple-500/30">
                                             Coming Soon
                                         </span>
                                         <span className="px-3 py-1 bg-pink-500/20 text-pink-400 rounded-full text-sm border border-pink-500/30">
                                             Advanced 3D
                                         </span>
+                                        <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm border border-purple-500/30">
+                                            Simulations
+                                        </span>
                                     </div>
+                                    <div className="flex items-center gap-2 text-purple-400 group-hover:gap-4 transition-all">
+                                        <span className="font-medium">Coming Soon →</span>
+                                    </div>
+                                </div>
+
+                                {/* Shimmer Effect */}
+                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-purple-500/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                                 </div>
                             </div>
                         </div>
@@ -549,7 +560,7 @@ function ScrollScene({ section1Ref, section2Ref, section3Ref, section4Ref }: Scr
             });
         }
 
-        // Section 3: Transition to pavement layers
+        // Section 3: Skip pavement - move directly to final view
         if (section3Ref.current) {
             gsap.to(cube.scale, {
                 x: 0.1,
@@ -558,7 +569,7 @@ function ScrollScene({ section1Ref, section2Ref, section3Ref, section4Ref }: Scr
                 scrollTrigger: {
                     trigger: section3Ref.current,
                     start: 'top center',
-                    end: 'top top',
+                    end: 'bottom center',
                     scrub: 1,
                 },
             });
@@ -569,49 +580,7 @@ function ScrollScene({ section1Ref, section2Ref, section3Ref, section4Ref }: Scr
                 scrollTrigger: {
                     trigger: section3Ref.current,
                     start: 'top center',
-                    end: 'top top',
-                    scrub: 1,
-                },
-            });
-
-            // Show layers and animate them
-            ScrollTrigger.create({
-                trigger: section3Ref.current,
-                start: 'top center',
-                onEnter: () => {
-                    layers.visible = true;
-                    // Animate each layer appearing
-                    layers.children.forEach((layer, index) => {
-                        gsap.fromTo(
-                            layer.position,
-                            { y: (layer.position as THREE.Vector3).y - 5 },
-                            {
-                                y: (layer.position as THREE.Vector3).y,
-                                duration: 0.8,
-                                delay: index * 0.2,
-                                ease: 'power2.out',
-                            }
-                        );
-                        gsap.fromTo(
-                            layer.scale,
-                            { x: 0.1, y: 0.1, z: 0.1 },
-                            {
-                                x: 1, y: 1, z: 1,
-                                duration: 0.8,
-                                delay: index * 0.2,
-                                ease: 'back.out(1.7)',
-                            }
-                        );
-                    });
-                },
-            });
-
-            gsap.to(layers.rotation, {
-                y: Math.PI * 2,
-                scrollTrigger: {
-                    trigger: section3Ref.current,
-                    start: 'top top',
-                    end: 'bottom top',
+                    end: 'bottom center',
                     scrub: 1,
                 },
             });
@@ -630,9 +599,9 @@ function ScrollScene({ section1Ref, section2Ref, section3Ref, section4Ref }: Scr
                 },
             });
 
-            gsap.to(layers.rotation, {
-                x: -Math.PI * 0.3,
-                y: Math.PI * 2.5,
+            gsap.to(cube.rotation, {
+                x: Math.PI * 3,
+                y: Math.PI * 3,
                 scrollTrigger: {
                     trigger: section4Ref.current,
                     start: 'top center',
@@ -660,8 +629,8 @@ function ScrollScene({ section1Ref, section2Ref, section3Ref, section4Ref }: Scr
                 />
             </mesh>
 
-            {/* Pavement Layers */}
-            <group ref={layersGroupRef}>
+            {/* Pavement Layers - Hidden */}
+            <group ref={layersGroupRef} visible={false}>
                 <PavementLayers />
             </group>
 

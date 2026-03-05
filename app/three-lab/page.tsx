@@ -1,13 +1,14 @@
 'use client';
 
-import { Suspense, useRef, useEffect } from 'react';
+import { Suspense, useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { Section, SectionTitle, Card } from '@/components/UI';
-import { BoxSelect, Layers as LayersIcon, ChevronDown } from 'lucide-react';
+import { BoxSelect, Layers as LayersIcon, ChevronDown, Rocket, Sparkles } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import * as THREE from 'three';
+import Link from 'next/link';
 
 if (typeof window !== 'undefined') {
     gsap.registerPlugin(ScrollTrigger);
@@ -19,12 +20,72 @@ export default function ThreeLabPage() {
     const section2Ref = useRef<HTMLDivElement>(null);
     const section3Ref = useRef<HTMLDivElement>(null);
     const section4Ref = useRef<HTMLDivElement>(null);
+    const [scrollProgress, setScrollProgress] = useState(0);
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollTop / docHeight) * 100;
+            setScrollProgress(progress);
+        };
+
+        const handleMouseMove = (e: MouseEvent) => {
+            setMousePosition({
+                x: (e.clientX / window.innerWidth - 0.5) * 30,
+                y: (e.clientY / window.innerHeight - 0.5) * 30,
+            });
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('mousemove', handleMouseMove);
+        
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('mousemove', handleMouseMove);
+        };
+    }, []);
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen relative">
+            {/* Scroll Progress Rocket */}
+            <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-2">
+                <div className="relative h-64 w-1 bg-slate-700 rounded-full overflow-hidden">
+                    <div 
+                        className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-cyan-500 to-blue-500 transition-all duration-300"
+                        style={{ height: `${scrollProgress}%` }}
+                    />
+                </div>
+                <div 
+                    className="absolute transition-all duration-300"
+                    style={{ 
+                        top: `calc(${scrollProgress}% - 12px)`,
+                        transform: 'translateY(-50%)'
+                    }}
+                >
+                    <Rocket className="w-6 h-6 text-cyan-400 rotate-180" />
+                </div>
+                <span className="text-xs text-slate-400 font-mono">{Math.round(scrollProgress)}%</span>
+            </div>
+
             {/* Hero Section with Scroll Indicator */}
-            <Section className="min-h-screen flex items-center justify-center relative">
-                <div className="text-center">
+            <Section className="min-h-screen flex items-center justify-center relative overflow-hidden">
+                {/* Parallax Background */}
+                <div 
+                    className="absolute inset-0 transition-transform duration-300 ease-out"
+                    style={{
+                        transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`,
+                    }}
+                >
+                    <div className="absolute inset-0 opacity-20">
+                        <div className="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full blur-3xl animate-pulse" />
+                        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent rounded-full blur-3xl animate-pulse delay-75" />
+                        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-pulse delay-150" />
+                    </div>
+                </div>
+                
+                <div className="text-center relative z-10">
                     <SectionTitle subtitle="Scroll-based 3D visualization and engineering simulations">
                         3D Engineering Lab
                     </SectionTitle>
@@ -47,7 +108,7 @@ export default function ThreeLabPage() {
                             <ambientLight intensity={0.5} />
                             <spotLight position={[10, 10, 10]} angle={0.3} penumbra={1} intensity={1} />
                             <pointLight position={[-10, -10, -10]} intensity={0.5} />
-                            <ScrollScene 
+                            <ScrollScene
                                 section1Ref={section1Ref}
                                 section2Ref={section2Ref}
                                 section3Ref={section3Ref}
@@ -70,7 +131,7 @@ export default function ThreeLabPage() {
                                     </h3>
                                 </div>
                                 <p className="text-foreground/80 leading-relaxed">
-                                    Explore engineering concepts through interactive 3D visualizations. 
+                                    Explore engineering concepts through interactive 3D visualizations.
                                     Watch as objects transform and animate based on your scroll position.
                                 </p>
                             </Card>
@@ -85,7 +146,7 @@ export default function ThreeLabPage() {
                                     Dynamic Transformations
                                 </h3>
                                 <p className="text-foreground/80 leading-relaxed mb-4">
-                                    The cube rotates and scales as you scroll, demonstrating 
+                                    The cube rotates and scales as you scroll, demonstrating
                                     real-time 3D transformations and animations.
                                 </p>
                                 <div className="flex gap-2 flex-wrap">
@@ -103,6 +164,52 @@ export default function ThreeLabPage() {
                         </div>
                     </div>
 
+                    {/* Preview Card - Particle Ring */}
+                    <div className="h-screen flex items-center justify-center px-8">
+                        <Link href="/three-lab/particle-ring" className="pointer-events-auto group">
+                            <div className="relative overflow-hidden rounded-2xl border-2 border-cyan-500/30 hover:border-cyan-500/60 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/20">
+                                <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
+                                    <div className="absolute inset-0 opacity-30">
+                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-cyan-500 rounded-full blur-3xl animate-pulse" />
+                                        <div className="absolute top-1/4 left-1/4 w-24 h-24 bg-blue-500 rounded-full blur-2xl animate-pulse delay-75" />
+                                    </div>
+                                </div>
+                                
+                                <div className="relative p-8 backdrop-blur-sm">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <Sparkles className="w-8 h-8 text-cyan-400" />
+                                        <h3 className="text-2xl font-bold text-slate-200">
+                                            Particle Ring
+                                        </h3>
+                                    </div>
+                                    <p className="text-slate-300 mb-6 leading-relaxed">
+                                        Rotating particle system forming mesmerizing concentric rings. 
+                                        Interactive orbit controls with smooth animations.
+                                    </p>
+                                    <div className="flex gap-2 flex-wrap mb-4">
+                                        <span className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm border border-cyan-500/30">
+                                            Particles
+                                        </span>
+                                        <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm border border-blue-500/30">
+                                            Interactive
+                                        </span>
+                                        <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm border border-purple-500/30">
+                                            3D Rings
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-cyan-400 group-hover:gap-4 transition-all">
+                                        <span className="font-medium">Explore →</span>
+                                    </div>
+                                </div>
+
+                                {/* Shimmer Effect */}
+                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                                </div>
+                            </div>
+                        </Link>
+                    </div>
+
                     {/* Section 3: Pavement Layers */}
                     <div ref={section3Ref} className="h-screen flex items-center justify-end px-8 md:px-16">
                         <div className="max-w-md pointer-events-auto">
@@ -114,7 +221,7 @@ export default function ThreeLabPage() {
                                     </h3>
                                 </div>
                                 <p className="text-foreground/80 leading-relaxed mb-4">
-                                    Watch as the pavement layers appear one by one, revealing 
+                                    Watch as the pavement layers appear one by one, revealing
                                     the complex structure of modern road engineering.
                                 </p>
                                 <div className="space-y-2">
@@ -139,6 +246,41 @@ export default function ThreeLabPage() {
                         </div>
                     </div>
 
+                    {/* Preview Card - More Coming Soon */}
+                    <div className="h-screen flex items-center justify-center px-8">
+                        <div className="pointer-events-auto">
+                            <div className="relative overflow-hidden rounded-2xl border-2 border-purple-500/30 hover:border-purple-500/60 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
+                                <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-purple-900/20 to-slate-900">
+                                    <div className="absolute inset-0 opacity-30">
+                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-500 rounded-full blur-3xl animate-pulse" />
+                                        <div className="absolute top-1/3 right-1/4 w-24 h-24 bg-pink-500 rounded-full blur-2xl animate-pulse delay-100" />
+                                    </div>
+                                </div>
+                                
+                                <div className="relative p-8 backdrop-blur-sm">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <BoxSelect className="w-8 h-8 text-purple-400" />
+                                        <h3 className="text-2xl font-bold text-slate-200">
+                                            More 3D Experiences
+                                        </h3>
+                                    </div>
+                                    <p className="text-slate-300 mb-6 leading-relaxed">
+                                        FWD deflection basins, stress distribution analysis, 
+                                        interactive product designs, and real-time simulations coming soon!
+                                    </p>
+                                    <div className="flex gap-2 flex-wrap">
+                                        <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm border border-purple-500/30">
+                                            Coming Soon
+                                        </span>
+                                        <span className="px-3 py-1 bg-pink-500/20 text-pink-400 rounded-full text-sm border border-pink-500/30">
+                                            Advanced 3D
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Section 4: Final View */}
                     <div ref={section4Ref} className="h-screen flex items-center justify-center px-8">
                         <div className="max-w-2xl pointer-events-auto text-center">
@@ -147,8 +289,8 @@ export default function ThreeLabPage() {
                                     Engineering Visualization
                                 </h3>
                                 <p className="text-foreground/80 leading-relaxed mb-6">
-                                    This is just the beginning. Imagine complex structural analysis, 
-                                    real-time simulations, and interactive engineering tools powered 
+                                    This is just the beginning. Imagine complex structural analysis,
+                                    real-time simulations, and interactive engineering tools powered
                                     by cutting-edge 3D technology.
                                 </p>
                                 <div className="flex flex-wrap gap-3 justify-center">
@@ -173,7 +315,7 @@ export default function ThreeLabPage() {
                 <h3 className="text-2xl font-bold text-foreground mb-6 text-center">
                     Traditional 3D Viewers
                 </h3>
-                
+
                 <div className="grid lg:grid-cols-2 gap-6">
                     {/* Rotating Cube Demo */}
                     <Card>
@@ -504,7 +646,7 @@ function ScrollScene({ section1Ref, section2Ref, section3Ref, section4Ref }: Scr
 // Rotating Cube Component (for static viewer)
 function RotatingCube() {
     const meshRef = useRef<THREE.Mesh>(null);
-    
+
     useFrame((state, delta) => {
         if (meshRef.current) {
             meshRef.current.rotation.x += delta * 0.5;

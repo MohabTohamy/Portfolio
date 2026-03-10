@@ -51,7 +51,38 @@ html {
 
 /* Glassmorphism utility */
 .glass {
-  background: rgba(26, 26, 26, 0.7);
+  background: rgba(26, 26, 26, 0.8);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass:hover {
+  background: rgba(26, 26, 26, 0.85);
+}
+
+/* Map popup custom styles */
+.maplibregl-popup-content {
+  background: rgba(0, 0, 0, 0.95) !important;
+  color: white !important;
+  border-radius: 8px !important;
+  padding: 0 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+.maplibregl-popup-close-button {
+  color: white !important;
+  font-size: 20px !important;
+  padding: 4px 8px !important;
+  right: 4px !important;
+  top: 4px !important;
+}
+
+.maplibregl-popup-close-button:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 4px !important;
+}
+
+.maplibregl-popup-tip {
+  border-top-color: rgba(0, 0, 0, 0.95) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.95) !important;
 }

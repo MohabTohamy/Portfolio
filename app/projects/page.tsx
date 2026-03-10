@@ -23,14 +23,14 @@ export default function ProjectsPage() {
 
                 {/* Category Filter */}
                 <div className="flex items-center gap-4 mb-12 flex-wrap justify-center">
-                    <Filter className="w-5 h-5 text-foreground/70" />
+                    <Filter className="w-5 h-5 text-gray-400" />
                     {categories.map((category) => (
                         <button
                             key={category}
                             onClick={() => setSelectedCategory(category)}
                             className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedCategory === category
-                                    ? 'bg-primary text-white'
-                                    : 'bg-card text-foreground hover:bg-card-hover'
+                                ? 'bg-white text-black shadow-lg shadow-white/20'
+                                : 'bg-card text-white hover:bg-card-hover border border-white/10 hover:border-white/20'
                                 }`}
                         >
                             {category}
@@ -61,17 +61,17 @@ export default function ProjectsPage() {
                                 </div>
 
                                 {/* Category Badge */}
-                                <div className="inline-block px-3 py-1 bg-primary/20 text-primary rounded-full text-sm mb-2 w-fit">
+                                <div className="inline-block px-3 py-1 bg-white/10 text-white rounded-full text-sm mb-3 w-fit border border-white/20 font-medium">
                                     {project.category}
                                 </div>
 
                                 {/* Project Title */}
-                                <h3 className="text-xl font-semibold text-foreground mb-2">
+                                <h3 className="text-xl font-bold text-white mb-3">
                                     {project.title}
                                 </h3>
 
                                 {/* Description */}
-                                <p className="text-foreground/70 mb-4 grow">
+                                <p className="text-gray-300 mb-4 grow leading-relaxed text-sm">
                                     {project.longDescription}
                                 </p>
 
@@ -80,7 +80,7 @@ export default function ProjectsPage() {
                                     {project.technologies.map((tech) => (
                                         <span
                                             key={tech}
-                                            className="px-2 py-1 bg-card rounded text-xs text-foreground/80"
+                                            className="px-3 py-1 bg-white/5 border border-white/20 rounded-md text-xs text-gray-300 font-medium"
                                         >
                                             {tech}
                                         </span>
@@ -94,7 +94,7 @@ export default function ProjectsPage() {
                                             href={project.github}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors"
+                                            className="flex items-center gap-2 text-sm text-white hover:text-white/80 transition-colors font-medium"
                                         >
                                             <Github className="w-4 h-4" />
                                             Code
@@ -105,7 +105,7 @@ export default function ProjectsPage() {
                                             href={project.demo}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center gap-2 text-sm text-foreground hover:text-accent transition-colors"
+                                            className="flex items-center gap-2 text-sm text-white hover:text-white/80 transition-colors font-medium"
                                         >
                                             <ExternalLink className="w-4 h-4" />
                                             Demo

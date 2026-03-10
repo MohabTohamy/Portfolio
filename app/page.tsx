@@ -18,7 +18,7 @@ export default function HomePage() {
         {/* Austrian Alps Background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?q=80&w=2070')] bg-cover bg-center" />
-          <div className="absolute inset-0 bg-linear-to-b from-background/95 via-background/90 to-background" />
+          <div className="absolute inset-0 bg-linear-to-b from-background/40 via-background/30 to-background/80" />
         </div>
 
         <div className="relative z-10 text-center">
@@ -40,7 +40,7 @@ export default function HomePage() {
             </p>
             <p className="text-foreground/70 max-w-2xl mx-auto mb-12">
               Frontend engineer building systems with many functionalities, specializing in infrastructure engineering platforms,
-              GIS solutions, and data automation. Passionate about Austria&apos;s innovation
+              GIS solutions, and data automation. Skilled in creating interactive 3D web experiences and modern UI designs. Passionate about Austria&apos;s innovation
               culture and commitment to sustainable engineering.
             </p>
 
@@ -106,10 +106,10 @@ export default function HomePage() {
             >
               <Card>
                 <div className="mb-4">{item.icon}</div>
-                <h3 className="text-xl font-semibold text-foreground mb-2">
+                <h3 className="text-xl font-semibold text-white mb-2">
                   {item.title}
                 </h3>
-                <p className="text-foreground/70">{item.description}</p>
+                <p className="text-gray-300">{item.description}</p>
               </Card>
             </motion.div>
           ))}

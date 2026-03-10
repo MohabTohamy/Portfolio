@@ -300,7 +300,7 @@ export default function ThreeLabPage() {
 
                     {/* Preview Card - More Coming Soon */}
                     <div ref={moreCardRef} className="h-screen flex items-center justify-center px-8">
-                        <div className="pointer-events-auto group">
+                        <Link href="/three-lab/futuristic-dashboard" className="pointer-events-auto group">
                             <div className="relative overflow-hidden rounded-2xl border-2 border-purple-500/30 hover:border-purple-500/60 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
                                 <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
                                     <div className="absolute inset-0 opacity-30">
@@ -311,28 +311,28 @@ export default function ThreeLabPage() {
 
                                 <div className="relative p-8 backdrop-blur-sm">
                                     <div className="flex items-center gap-3 mb-4">
-                                        <BoxSelect className="w-8 h-8 text-purple-400" />
+                                        <Rocket className="w-8 h-8 text-purple-400" />
                                         <h3 className="text-2xl font-bold text-slate-200">
-                                            More 3D Experiences
+                                            Futuristic Dashboard
                                         </h3>
                                     </div>
                                     <p className="text-slate-300 mb-6 leading-relaxed">
-                                        FWD deflection basins, stress distribution analysis,
-                                        interactive product designs, and real-time simulations coming soon!
+                                        Interactive 3D dashboard with floating geometric shapes, holographic rings,
+                                        distorted spheres, and pulsing light orbs in a tech-inspired environment.
                                     </p>
                                     <div className="flex gap-2 flex-wrap mb-4">
                                         <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm border border-purple-500/30">
-                                            Coming Soon
+                                            Interactive
                                         </span>
                                         <span className="px-3 py-1 bg-pink-500/20 text-pink-400 rounded-full text-sm border border-pink-500/30">
-                                            Advanced 3D
+                                            Real-time
                                         </span>
                                         <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm border border-purple-500/30">
-                                            Simulations
+                                            WebGL
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2 text-purple-400 group-hover:gap-4 transition-all">
-                                        <span className="font-medium">Coming Soon →</span>
+                                        <span className="font-medium">Explore →</span>
                                     </div>
                                 </div>
 
@@ -341,7 +341,7 @@ export default function ThreeLabPage() {
                                     <div className="absolute inset-0 bg-linear-to-r from-transparent via-purple-500/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     </div>
 
                     {/* Section 4: Final View */}

@@ -410,7 +410,7 @@ export default function MapDemoPage() {
                                 {/* Upload Button */}
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-black rounded-lg hover:bg-white/90 transition-colors font-medium"
                                 >
                                     <Upload className="w-4 h-4" />
                                     Upload Your Data
@@ -633,17 +633,18 @@ export default function MapDemoPage() {
                                             onClose={() => setSelectedFeature(null)}
                                             closeOnClick={false}
                                             maxWidth="400px"
+                                            className="custom-popup"
                                         >
-                                            <div className="p-3 min-w-[250px]">
-                                                <h3 className="font-bold text-lg mb-2">
+                                            <div className="p-3 min-w-[250px] bg-black/95 text-white rounded-lg">
+                                                <h3 className="font-bold text-lg mb-2 text-white">
                                                     {selectedFeature.feature.properties?.name || selectedFeature.feature.properties?.code || 'Feature'}
                                                 </h3>
                                                 <div className="space-y-1 text-sm">
                                                     {Object.entries(selectedFeature.feature.properties || {}).map(([key, value]) => (
                                                         key !== 'name' && (
                                                             <div key={key} className="flex justify-between gap-4">
-                                                                <span className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}:</span>
-                                                                <span className="text-foreground/70">{String(value)}</span>
+                                                                <span className="font-medium capitalize text-gray-300">{key.replace(/([A-Z])/g, ' $1').trim()}:</span>
+                                                                <span className="text-gray-400">{String(value)}</span>
                                                             </div>
                                                         )
                                                     ))}
@@ -664,7 +665,7 @@ export default function MapDemoPage() {
                                             </p>
                                             <button
                                                 onClick={handleDownloadSample}
-                                                className="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors inline-flex items-center gap-2"
+                                                className="px-6 py-2.5 bg-white text-black rounded-lg hover:bg-white/90 transition-colors inline-flex items-center gap-2"
                                             >
                                                 <Download className="w-4 h-4" />
                                                 Get Sample Data

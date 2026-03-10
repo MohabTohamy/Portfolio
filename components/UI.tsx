@@ -53,7 +53,7 @@ export function Card({ children, className = '', hover = true }: CardProps) {
     return (
         <motion.div
             whileHover={hover ? { y: -5 } : undefined}
-            className={`glass rounded-xl p-6 transition-all ${hover ? 'hover:shadow-lg hover:shadow-primary/20' : ''
+            className={`glass rounded-xl p-6 transition-all duration-300 ${hover ? 'hover:shadow-xl hover:shadow-primary/25 hover:border-white/20' : ''
                 } ${className}`}
         >
             {children}
@@ -89,7 +89,7 @@ export function Button({
         secondary:
             'bg-gray-700 hover:bg-gray-600 text-white shadow-lg shadow-gray-700/30',
         outline:
-            'border-2 border-white text-white hover:bg-white hover:text-black',
+            'border-2 border-white/80 text-white hover:border-white hover:bg-white/10 backdrop-blur-sm',
     };
 
     const variantStyles = variants[variant];

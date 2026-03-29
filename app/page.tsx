@@ -1,5 +1,6 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ArrowRight, MapPin, Code, Layers, Database } from 'lucide-react';
 import { Button, Section, SectionTitle, Card } from '@/components/UI';
@@ -8,6 +9,8 @@ import { projects } from '@/data/projects';
 import { skills } from '@/data/experience';
 import FunnySurvey from '@/components/FunnySurvey';
 
+const LusionConnectors = dynamic(() => import('@/components/LusionConnectors'), { ssr: false });
+
 export default function HomePage() {
   const featuredProjects = projects.filter((p) => p.featured).slice(0, 3);
 
@@ -15,10 +18,15 @@ export default function HomePage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <Section className="min-h-[calc(100vh-4rem)] flex items-center justify-center relative overflow-hidden">
+        {/* Lusion Connectors 3D physics */}
+        <div className="absolute inset-0 z-5 pointer-events-none">
+          <LusionConnectors />
+        </div>
+
         {/* Austrian Alps Background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?q=80&w=2070')] bg-cover bg-center" />
-          <div className="absolute inset-0 bg-linear-to-b from-background/40 via-background/30 to-background/80" />
+          <div className="absolute inset-0 bg-linear-to-b from-background/50 via-background/50 to-background" />
         </div>
 
         <div className="relative z-10 text-center">
@@ -40,7 +48,7 @@ export default function HomePage() {
             </p>
             <p className="text-foreground/70 max-w-2xl mx-auto mb-12">
               Frontend engineer building systems with many functionalities, specializing in infrastructure engineering platforms,
-              GIS solutions, and data automation. Skilled in creating interactive 3D web experiences and modern UI designs. Passionate about Austria&apos;s innovation
+              GIS solutions, and data automation. Passionate about Austria&apos;s innovation
               culture and commitment to sustainable engineering.
             </p>
 
@@ -106,10 +114,10 @@ export default function HomePage() {
             >
               <Card>
                 <div className="mb-4">{item.icon}</div>
-                <h3 className="text-xl font-semibold text-white mb-2">
+                <h3 className="text-xl font-semibold text-foreground mb-2">
                   {item.title}
                 </h3>
-                <p className="text-gray-300">{item.description}</p>
+                <p className="text-foreground/70">{item.description}</p>
               </Card>
             </motion.div>
           ))}

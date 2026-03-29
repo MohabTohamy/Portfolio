@@ -433,13 +433,16 @@ const DefaultBallpitConfig = {
     count: 200,
     colors: [0x6366f1, 0x8b5cf6, 0xec4899, 0x06b6d4, 0xf59e0b, 0x10b981],
     ambientColor: 0xffffff,
-    ambientIntensity: 1,
-    lightIntensity: 200,
+    ambientIntensity: 0.4,
+    lightIntensity: 600,
     materialParams: {
-        metalness: 0.5,
-        roughness: 0.5,
+        metalness: 0.9,
+        roughness: 0.05,
         clearcoat: 1,
-        clearcoatRoughness: 0.15
+        clearcoatRoughness: 0.03,
+        iridescence: 0.4,
+        iridescenceIOR: 1.5,
+        envMapIntensity: 2.0,
     },
     minSize: 0.5,
     maxSize: 1,
@@ -645,8 +648,25 @@ class Z extends InstancedMesh {
     #setupLights() {
         this.ambientLight = new AmbientLight(this.config.ambientColor, this.config.ambientIntensity);
         this.add(this.ambientLight);
+
+        // Main dynamic light (follows cursor sphere)
         this.light = new PointLight(this.config.colors[0], this.config.lightIntensity);
         this.add(this.light);
+
+        // Fill light — warm from top-left
+        const fill1 = new PointLight(0xfff4e0, 400);
+        fill1.position.set(-10, 10, 6);
+        this.add(fill1);
+
+        // Fill light — cool from bottom-right
+        const fill2 = new PointLight(0xd0e8ff, 300);
+        fill2.position.set(10, -8, 4);
+        this.add(fill2);
+
+        // Rim/backlight — deep blue from behind
+        const rim = new PointLight(0x4060ff, 500);
+        rim.position.set(0, 2, -10);
+        this.add(rim);
     }
 
     setColors(colors: number[]) {
@@ -720,6 +740,7 @@ function createBallpit(canvas: HTMLCanvasElement, config: any = {}): CreateBallp
     });
     let spheres: Z;
     threeInstance.renderer.toneMapping = ACESFilmicToneMapping;
+    threeInstance.renderer.toneMappingExposure = 1.4;
     threeInstance.camera.position.set(0, 0, 20);
     threeInstance.camera.lookAt(0, 0, 0);
     threeInstance.cameraMaxAspect = 1.5;

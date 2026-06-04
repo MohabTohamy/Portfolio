@@ -25,8 +25,8 @@ export default function HomePage() {
             transition={{ duration: 0.6, ease: 'easeOut' }}
             className="font-display text-5xl md:text-7xl lg:text-[88px] text-[var(--fg)] leading-[0.98] mb-8 max-w-4xl"
           >
-            I build the unglamorous software that makes engineering data
-            actually usable.
+            I build production-grade React frontends that enterprise teams
+            actually run on.
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 16 }}
@@ -34,9 +34,11 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
             className="text-lg md:text-xl text-[var(--fg-muted)] max-w-2xl leading-relaxed mb-10"
           >
-            React, Next.js, and a lot of Python. Pavement surveys, GIS pipelines,
-            desktop tools that turn weeks of spreadsheet work into one click.
-            Currently in Saudi Arabia. Moving to Austria in 2026 —
+            React, Next.js, and TypeScript. Dashboards, asset-management systems,
+            and GIS interfaces — wired to ASP.NET Core APIs and built to hold up
+            in real enterprise environments. Plus a lot of Python on the side, for
+            the tools that turn weeks of manual work into one click. Currently in
+            Saudi Arabia. Moving to Austria in 2026 —
             {/*my closestfriends are in St. Pölten and*/} the engineering scene there is
             genuinely good.
           </motion.p>
@@ -143,19 +145,19 @@ export default function HomePage() {
             {[
               {
                 title: 'Frontend engineering',
-                body: 'React + Next.js + TypeScript. Dashboards, GIS interfaces, internal tools. I care about the boring parts — loading states, empty states, the thing that breaks at 4pm on Friday.',
+                body: 'React + Next.js + TypeScript. Dashboards, asset-management modules, internal tools. Complex state, async data, API errors handled properly. I care about the boring parts — loading states, empty states, the thing that breaks at 4pm on Friday.',
+              },
+              {
+                title: 'API & backend integration',
+                body: 'Wiring React frontends to ASP.NET Core and REST APIs, backed by SQL Server and PostgreSQL. Refactoring legacy code so it scales instead of rotting, and keeping performance honest as features pile up.',
               },
               {
                 title: 'Python automation',
-                body: 'Standalone EXE tools that field engineers can use without touching code. Data validation pipelines for survey output. AI-driven desktop automation. The kind of code that turns a week of manual work into one click.',
+                body: 'Standalone EXE tools that field engineers can use without touching code. Data-validation pipelines for survey output. The kind of code that turns a week of manual work into one click.',
               },
               {
                 title: 'GIS & geospatial',
-                body: 'MapLibre, Mapbox, GeoPandas. Coordinate fixes, format conversion, layer management. Most of my web work has a map in it somewhere.',
-              },
-              {
-                title: 'Pavement & infrastructure data',
-                body: 'LCMS, CFT, FWD, HWD, GPR. The domain knowledge to know what valid data looks like before you write the validator.',
+                body: 'Leaflet, MapLibre, GeoPandas. Map visualization, coordinate fixes, format conversion, layer management. Most of my web work has a map in it somewhere.',
               },
             ].map((s, i) => (
               <motion.div

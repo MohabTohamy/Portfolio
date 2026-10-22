@@ -169,3 +169,49 @@ html {
 .intro-seen [data-intro] {
   display: none;
 }
+
+/* ── Horizon home: word reveal, rise, hot accent ── */
+:root {
+  --hot: #FF8A3D;
+}
+.font-fraunces {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+}
+.split-w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+.split-w > span {
+  display: inline-block;
+  transform: translateY(108%);
+  transition: transform 0.95s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: calc(var(--i) * 55ms);
+}
+.split-in .split-w > span {
+  transform: none;
+}
+.split-hot {
+  color: var(--hot);
+  font-weight: 500;
+}
+.rise {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.9s, transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.rise-in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .split-w > span,
+  .rise {
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+}

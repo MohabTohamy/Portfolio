@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { Fraunces, Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import IntroGate from "@/components/IntroGate";
@@ -18,6 +18,14 @@ const instrumentSerif = Instrument_Serif({
   display: "swap",
 });
 
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  style: ["italic"],
+  weight: ["300", "500"],
+  display: "swap",
+});
+
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
@@ -27,7 +35,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Mohab Tohamy — full-stack engineer",
   description:
-    "I build software people pay for: Clinix, a clinic system, and Eterna, an online store. React, .NET and PostgreSQL, with 3D on the web.",
+    "I take ideas all the way to production: Clinix, a clinic system, and Eterna, an online store. React, .NET and PostgreSQL, with 3D on the web.",
 };
 
 export default function RootLayout({
@@ -44,7 +52,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} antialiased min-h-screen grain`}
+        className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} ${fraunces.variable} antialiased min-h-screen grain`}
       >
         <IntroGate />
         <Navigation />

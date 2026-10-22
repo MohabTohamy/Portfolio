@@ -32,7 +32,7 @@ export default function ContactPage() {
                         Let’s talk.
                     </h1>
                     <p className="text-lg text-[var(--fg-muted)] leading-relaxed max-w-xl">
-                        I’m looking for a full-stack or frontend role, in Austria or
+                        I’m looking for a full-stack or frontend role, with relocation or
                         remote. Email is the fastest way to reach me.
                     </p>
                 </motion.div>
@@ -97,7 +97,7 @@ export default function ContactPage() {
                         <Eyebrow className="mb-5">Location</Eyebrow>
                         <p className="text-[var(--fg)] mb-1">Riyadh, Saudi Arabia</p>
                         <p className="text-sm text-[var(--fg-muted)] leading-relaxed">
-                            Open to relocating to Austria
+                            Open to relocating, especially within Europe, or remote
                         </p>
                     </div>
 

@@ -33,7 +33,7 @@ export default function AboutPage() {
                             night, I am the one who fixes it.
                         </p>
                         <p className="text-[var(--fg)]">
-                            I live in Riyadh and I am open to relocating to Austria.
+                            I live in Riyadh and I am open to relocating.
                         </p>
                     </div>
                 </div>

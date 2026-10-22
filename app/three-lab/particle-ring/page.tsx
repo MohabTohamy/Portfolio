@@ -356,6 +356,9 @@ export default function ParticleRingPage() {
                 <div className="hidden md:block" />
             </div>
 
+            {/* Keeps the caption readable over the scene on phones */}
+            <div className="md:hidden fixed inset-x-0 bottom-0 h-72 z-30 pointer-events-none bg-gradient-to-t from-[var(--bg)] via-[var(--bg)]/85 to-transparent" />
+
             {/* Bottom-left: title block */}
             <div className="fixed bottom-10 left-6 md:left-12 z-40 max-w-md pointer-events-none">
                 <p className="text-xs uppercase tracking-[0.2em] text-[var(--fg)]/50 mb-3">
@@ -372,7 +375,7 @@ export default function ParticleRingPage() {
             </div>
 
             {/* Bottom-right: stats */}
-            <div className="fixed bottom-10 right-6 md:right-12 z-40 text-right pointer-events-none">
+            <div className="hidden md:block fixed bottom-10 right-6 md:right-12 z-40 text-right pointer-events-none">
                 <dl className="space-y-1.5 font-mono text-xs">
                     <div className="flex items-baseline justify-end gap-3">
                         <dt className="uppercase tracking-[0.18em] text-[var(--fg)]/40">particles</dt>
@@ -394,7 +397,7 @@ export default function ParticleRingPage() {
             </div>
 
             {/* Mid-right hint */}
-            <p className="fixed top-1/2 right-6 md:right-12 -translate-y-1/2 z-30 text-[10px] uppercase tracking-[0.2em] text-[var(--fg)]/30 pointer-events-none rotate-90 origin-bottom-right">
+            <p className="hidden md:block fixed top-1/2 right-6 md:right-12 -translate-y-1/2 z-30 text-[10px] uppercase tracking-[0.2em] text-[var(--fg)]/30 pointer-events-none rotate-90 origin-bottom-right">
                 drag to orbit · move cursor to disturb
             </p>
         </div>

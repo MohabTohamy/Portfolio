@@ -164,3 +164,8 @@ html {
   letter-spacing: 0.18em;
   color: var(--fg-muted);
 }
+
+/* Set by the inline script in layout.tsx for returning visitors in this session */
+.intro-seen [data-intro] {
+  display: none;
+}

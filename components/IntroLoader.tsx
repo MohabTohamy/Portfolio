@@ -121,7 +121,7 @@ export default function IntroLoader({ onComplete }: { onComplete: () => void }) 
   }, [phase, morphT, pathLength, onComplete]);
 
   return (
-    <motion.div
+    <motion.div data-intro
       className="fixed inset-0 z-[100] bg-[var(--bg)] flex flex-col items-center justify-center"
       initial={{ opacity: 1 }}
       animate={{ opacity: phase === 'done' ? 0 : 1 }}

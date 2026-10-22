@@ -8,8 +8,11 @@ import {
     Color,
     InstancedMesh,
     MathUtils,
+    Mesh,
     MeshPhysicalMaterial,
+    MeshPhysicalMaterialParameters,
     Object3D,
+    OrthographicCamera,
     PerspectiveCamera,
     Plane,
     PMREMGenerator,
@@ -41,9 +44,16 @@ interface SizeData {
     pixelRatio: number;
 }
 
+// Whatever post-processing chain is attached: it renders the frame and follows the canvas size.
+interface PostProcessing {
+    render(): void;
+    setSize(width: number, height: number): void;
+    dispose(): void;
+}
+
 class X {
     #config: XConfig;
-    #postprocessing: any;
+    #postprocessing: PostProcessing | undefined;
     #resizeObserver?: ResizeObserver;
     #intersectionObserver?: IntersectionObserver;
     #resizeTimer?: number;
@@ -186,8 +196,8 @@ class X {
             const fovRad = (this.camera.fov * Math.PI) / 180;
             this.size.wHeight = 2 * Math.tan(fovRad / 2) * this.camera.position.length();
             this.size.wWidth = this.size.wHeight * this.camera.aspect;
-        } else if ((this.camera as any).isOrthographicCamera) {
-            const cam = this.camera as any;
+        } else if ((this.camera as unknown as OrthographicCamera).isOrthographicCamera) {
+            const cam = this.camera as unknown as OrthographicCamera;
             this.size.wHeight = cam.top - cam.bottom;
             this.size.wWidth = cam.right - cam.left;
         }
@@ -206,22 +216,24 @@ class X {
         this.size.pixelRatio = pr;
     }
 
-    get postprocessing() {
+    get postprocessing(): PostProcessing | undefined {
         return this.#postprocessing;
     }
-    set postprocessing(value: any) {
+    set postprocessing(value: PostProcessing) {
         this.#postprocessing = value;
         this.render = value.render.bind(value);
     }
 
     #onIntersection(entries: IntersectionObserverEntry[]) {
         this.#isAnimating = entries[0].isIntersecting;
-        this.#isAnimating ? this.#startAnimation() : this.#stopAnimation();
+        if (this.#isAnimating) this.#startAnimation();
+        else this.#stopAnimation();
     }
 
     #onVisibilityChange() {
         if (this.#isAnimating) {
-            document.hidden ? this.#stopAnimation() : this.#startAnimation();
+            if (document.hidden) this.#stopAnimation();
+            else this.#startAnimation();
         }
     }
 
@@ -254,15 +266,16 @@ class X {
 
     clear() {
         this.scene.traverse(obj => {
-            if ((obj as any).isMesh && typeof (obj as any).material === 'object' && (obj as any).material !== null) {
-                Object.keys((obj as any).material).forEach(key => {
-                    const matProp = (obj as any).material[key];
+            if (obj instanceof Mesh && typeof obj.material === 'object' && obj.material !== null) {
+                const material = obj.material as unknown as Record<string, unknown> & { dispose(): void };
+                Object.keys(material).forEach(key => {
+                    const matProp = material[key] as { dispose?: unknown } | null;
                     if (matProp && typeof matProp === 'object' && typeof matProp.dispose === 'function') {
                         matProp.dispose();
                     }
                 });
-                (obj as any).material.dispose();
-                (obj as any).geometry.dispose();
+                material.dispose();
+                obj.geometry.dispose();
             }
         });
         this.scene.clear();
@@ -437,7 +450,7 @@ class W {
 }
 
 class Y extends MeshPhysicalMaterial {
-    constructor(params: any) {
+    constructor(params: MeshPhysicalMaterialParameters) {
         super(params);
     }
 }
@@ -760,7 +773,7 @@ interface CreateBallpitReturn {
     dispose: () => void;
 }
 
-function createBallpit(canvas: HTMLCanvasElement, config: any = {}): CreateBallpitReturn {
+function createBallpit(canvas: HTMLCanvasElement, config: Partial<typeof DefaultBallpitConfig> = {}): CreateBallpitReturn {
     const threeInstance = new X({
         canvas,
         size: 'parent',
@@ -781,7 +794,7 @@ function createBallpit(canvas: HTMLCanvasElement, config: any = {}): CreateBallp
 
     canvas.style.touchAction = 'none';
     canvas.style.userSelect = 'none';
-    (canvas.style as any).webkitUserSelect = 'none';
+    canvas.style.setProperty('-webkit-user-select', 'none');
 
     const pointerData = createPointerData({
         domElement: canvas,
@@ -799,7 +812,7 @@ function createBallpit(canvas: HTMLCanvasElement, config: any = {}): CreateBallp
         }
     });
 
-    function initialize(cfg: any) {
+    function initialize(cfg: Partial<typeof DefaultBallpitConfig>) {
         if (spheres) {
             threeInstance.clear();
             threeInstance.scene.remove(spheres);
@@ -842,7 +855,7 @@ export interface BallpitProps {
     friction?: number;
     wallBounce?: number;
     colors?: number[];
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 const Ballpit: React.FC<BallpitProps> = ({

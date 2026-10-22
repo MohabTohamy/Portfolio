@@ -34,7 +34,15 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        {/* Runs before first paint: visitors who already saw the intro this session never see it flash. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "try{if(sessionStorage.getItem('portfolio_intro_seen')==='1')document.documentElement.classList.add('intro-seen')}catch(e){}",
+          }}
+        />
+      </head>
       <body
         className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} antialiased min-h-screen grain`}
       >

@@ -1,31 +1,36 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import IntroLoader from './IntroLoader';
 
-// Swap to localStorage to make this fire once per browser (forever).
 // sessionStorage = once per tab/session, which is friendlier for testing
 // and for recruiters who close + reopen the tab.
-const STORAGE: Storage | null =
-  typeof window !== 'undefined' ? window.sessionStorage : null;
 const KEY = 'portfolio_intro_seen';
 
+const seenThisSession = () => {
+  try {
+    return window.sessionStorage.getItem(KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+const noSubscription = () => () => {};
+
 export default function IntroGate() {
-  // Initial state is `true` so SSR + first client paint show the loader.
-  // The effect below dismisses it instantly for returning visitors.
-  const [show, setShow] = useState(true);
+  // The server render shows the loader, so the page never flashes before it.
+  // On the client, returning visitors skip it straight away.
+  const seen = useSyncExternalStore(noSubscription, seenThisSession, () => false);
+  const [done, setDone] = useState(false);
 
-  useEffect(() => {
-    if (STORAGE?.getItem(KEY)) setShow(false);
-  }, []);
-
-  if (!show) return null;
+  if (seen || done) return null;
 
   return (
     <IntroLoader
       onComplete={() => {
-        STORAGE?.setItem(KEY, '1');
-        setShow(false);
+        try {
+          window.sessionStorage.setItem(KEY, '1');
+        } catch {}
+        setDone(true);
       }}
     />
   );

@@ -332,6 +332,10 @@ export default function FuturisticDashboardPage() {
                 </Canvas>
             </div>
 
+            {/* Keeps the caption readable over the scene on phones */}
+
+            <div className="md:hidden fixed inset-x-0 bottom-0 h-72 z-20 pointer-events-none bg-gradient-to-t from-[var(--bg)] via-[var(--bg)]/85 to-transparent" />
+
             {/* Bottom-left title */}
             <div className="fixed bottom-10 left-6 md:left-12 z-30 max-w-md pointer-events-none">
                 <p className="text-xs uppercase tracking-[0.2em] text-[var(--fg)]/50 mb-3">
@@ -348,7 +352,7 @@ export default function FuturisticDashboardPage() {
             </div>
 
             {/* Bottom-right stats */}
-            <div className="fixed bottom-10 right-6 md:right-12 z-30 text-right pointer-events-none">
+            <div className="hidden md:block fixed bottom-10 right-6 md:right-12 z-30 text-right pointer-events-none">
                 <dl className="space-y-1.5 font-mono text-xs">
                     <div className="flex items-baseline justify-end gap-3">
                         <dt className="uppercase tracking-[0.18em] text-[var(--fg)]/40">

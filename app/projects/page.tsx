@@ -136,7 +136,7 @@ export default function ProjectsPage() {
                                                                         rel="noopener noreferrer"
                                                                         className="link-arrow"
                                                                     >
-                                                                        Live demo
+                                                                        {p.category === 'Product' ? 'Visit the live product' : 'Open the demo'}
                                                                         <ArrowUpRight className="w-4 h-4" />
                                                                     </a>
                                                                 ) : (
@@ -144,7 +144,7 @@ export default function ProjectsPage() {
                                                                         href={p.demo}
                                                                         className="link-arrow"
                                                                     >
-                                                                        Live demo
+                                                                        {p.category === 'Product' ? 'Visit the live product' : 'Open the demo'}
                                                                         <ArrowUpRight className="w-4 h-4" />
                                                                     </Link>
                                                                 ))}

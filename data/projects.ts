@@ -17,7 +17,7 @@ export const projects: Project[] = [
     {
         id: 'clinix',
         title: 'Clinix — Clinic Management SaaS',
-        description: 'A multi-tenant clinic management platform, live and used daily: appointments and live queue, medical records, printed prescriptions with a pharmacy-verifiable QR code, surgical cases with consent forms, billing and expenses, online booking with a WhatsApp code, and a Flutter tablet app that takes the doctor from the waiting list into the whole consultation in one tap.',
+        description: 'A multi-tenant clinic management platform in production, used every day by paying clinics: appointments and live queue, medical records, printed prescriptions with a pharmacy-verifiable QR code, surgical cases with consent forms, billing and expenses, online booking with a WhatsApp code, and a Flutter tablet app that takes the doctor from the waiting list into the whole consultation in one tap.',
         longDescription: 'Designed, built and launched end to end. Arabic-first React 19 web app and Flutter tablet app on a .NET 10 API and PostgreSQL. Every clinical table is tenant-scoped with global query filters; per-clinic role permissions keep a receptionist out of clinical notes; an append-only audit log records every change and every patient file opened. Clinical search covers a 25,000-medicine Egyptian formulary and 71,000 ICD-10 codes, tolerant of Arabic spelling. Prescriptions, receipts, medical reports and consent forms print exactly on each clinic’s own letterhead. Patients book themselves on the clinic’s page and prove their phone with a one-time WhatsApp code; a background worker sends day-before reminders. Patient media lives on private Cloudflare R2 storage; 60 automated tests run in CI, and every push to main deploys.',
         technologies: ['React 19', 'TypeScript', '.NET 10', 'PostgreSQL', 'EF Core', 'Flutter', 'WhatsApp Cloud API', 'Cloudflare R2'],
         category: 'Product',
@@ -28,7 +28,7 @@ export const projects: Project[] = [
     {
         id: 'eterna',
         title: 'Eterna — Bilingual Beauty E-commerce',
-        description: 'A live store on its own domain for the Egyptian market in English and Arabic: storefront, cash-on-delivery checkout, order tracking and a full admin panel, with bilingual transactional email from the brand’s domain and structured data for search and AI engines.',
+        description: 'A store in production on its own domain, taking real orders from customers in the Egyptian market in English and Arabic: storefront, cash-on-delivery checkout, order tracking and a full admin panel, with bilingual transactional email from the brand’s domain and structured data for search and AI engines.',
         longDescription: 'Next.js 16 storefront on an ASP.NET Core 9 API with Clean Architecture and CQRS. Order lifecycle with enforced status transitions and stock reservation that stays correct under concurrent orders. JWT with rotating refresh tokens and reuse detection, MFA and account lockout; a 10-layer security audit of the live stack found and fixed proxy-keyed rate limits, timing-based account enumeration, an open image proxy and unsigned uploads. Canonical and hreflang metadata, JSON-LD, a dynamic sitemap and IndexNow pings; indexed in Google and Bing.',
         technologies: ['Next.js 16', 'TypeScript', 'Tailwind v4', 'ASP.NET Core 9', 'CQRS', 'PostgreSQL', 'Cloudinary', 'Resend'],
         category: 'Product',

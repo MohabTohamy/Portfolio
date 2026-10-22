@@ -347,9 +347,9 @@ export default function MapDemoPage() {
                         Interactive GIS Map Viewer
                     </h1>
                     <p className="text-[var(--fg-muted)] max-w-2xl leading-relaxed">
-                        Visualize road infrastructure data from real-world LCMS surveys. Download
-                        12,999 analyzed distress points from Aseer region, or upload your own
-                        Excel / GeoJSON file.
+                        Plot road-survey points on a map, colour them by type and severity, and
+                        filter them. Load the generated sample, or drop in your own Excel or
+                        GeoJSON file. Nothing leaves your browser.
                     </p>
                 </div>
 
@@ -364,8 +364,8 @@ export default function MapDemoPage() {
                             </div>
 
                             <p className="text-sm text-[var(--fg-muted)] leading-relaxed mb-4">
-                                <strong className="text-[var(--fg)]">12,999 distress points</strong> from
-                                Aseer region, professionally analyzed with LCMS technology.
+                                <strong className="text-[var(--fg)]">Generated sample data</strong> —
+                                random points, not from any real survey.
                             </p>
 
                             <div className="space-y-2">

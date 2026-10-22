@@ -1,164 +1,155 @@
-// Project data for portfolio
+// The work page, in the order it is read. Each entry is a short case study: what it is,
+// then the few problems worth explaining. Ministry work is described in words only —
+// no screenshots, no data, no links.
+
+export interface CaseStudyPoint {
+    title: string;
+    body: string;
+}
 
 export interface Project {
     id: string;
     title: string;
-    description: string;
-    longDescription: string;
-    technologies: string[];
-    category: 'Product' | 'Frontend' | 'GIS' | 'Automation' | 'Engineering' | 'Python';
-    image: string;
-    github?: string;
-    demo?: string;
-    featured: boolean;
+    kind: 'Live product' | 'Day job' | 'Tools' | 'Craft';
+    /** One line for the home page. */
+    tagline: string;
+    /** One or two sentences at the top of the case study. */
+    summary: string;
+    role: string;
+    points: CaseStudyPoint[];
+    stack: string[];
+    link?: { href: string; label: string };
 }
 
 export const projects: Project[] = [
     {
         id: 'clinix',
-        title: 'Clinix — Clinic Management SaaS',
-        description: 'A multi-tenant clinic management platform in production, used every day by paying clinics: appointments and live queue, medical records, printed prescriptions with a pharmacy-verifiable QR code, surgical cases with consent forms, billing and expenses, online booking with a WhatsApp code, and a Flutter tablet app that takes the doctor from the waiting list into the whole consultation in one tap.',
-        longDescription: 'Designed, built and launched end to end. Arabic-first React 19 web app and Flutter tablet app on a .NET 10 API and PostgreSQL. Every clinical table is tenant-scoped with global query filters; per-clinic role permissions keep a receptionist out of clinical notes; an append-only audit log records every change and every patient file opened. Clinical search covers a 25,000-medicine Egyptian formulary and 71,000 ICD-10 codes, tolerant of Arabic spelling. Prescriptions, receipts, medical reports and consent forms print exactly on each clinic’s own letterhead. Patients book themselves on the clinic’s page and prove their phone with a one-time WhatsApp code; a background worker sends day-before reminders. Patient media lives on private Cloudflare R2 storage; 60 automated tests run in CI, and every push to main deploys.',
-        technologies: ['React 19', 'TypeScript', '.NET 10', 'PostgreSQL', 'EF Core', 'Flutter', 'WhatsApp Cloud API', 'Cloudflare R2'],
-        category: 'Product',
-        image: '/projects/clinix.jpg',
-        demo: 'https://www.zclinix.com',
-        featured: true,
+        title: 'Clinix',
+        kind: 'Live product',
+        tagline: 'Clinic system for private doctors in Egypt. Web and tablet app.',
+        summary:
+            'A clinic system for private doctors in Egypt. Clinics pay for it and run every consultation on it: the queue, the medical record, the prescription, the bill.',
+        role: 'Mine end to end: product, design, web, API, database, tablet app, deployment and support.',
+        points: [
+            {
+                title: 'One tap for the doctor',
+                body: 'The doctor works from a tablet. One tap on the next patient opens the whole consultation: history, notes, diagnosis from 71,000 ICD-10 codes, and a prescription from a 25,000-medicine Egyptian formulary. Search understands the different ways people spell Arabic names.',
+            },
+            {
+                title: 'Every clinic sees only its own patients',
+                body: 'Many clinics share one database. Every clinical table carries the clinic’s key, and the data layer applies the filter, not each screen. Roles keep a receptionist out of clinical notes, and an audit log records every change and every patient file opened.',
+            },
+            {
+                title: 'Patients book themselves',
+                body: 'Each clinic gets a public booking page built from the doctor’s working hours. Patients prove their phone number with a one-time WhatsApp code, and a background job reminds them the day before.',
+            },
+            {
+                title: 'Paper that looks like the clinic’s own',
+                body: 'Prescriptions, receipts, medical reports and consent forms print on each clinic’s letterhead. A QR code on the prescription lets a pharmacist check it is real.',
+            },
+        ],
+        stack: ['React 19', 'TypeScript', '.NET 10', 'PostgreSQL', 'Flutter', 'WhatsApp Cloud API', 'Cloudflare R2'],
+        link: { href: 'https://www.zclinix.com', label: 'zclinix.com' },
     },
     {
         id: 'eterna',
-        title: 'Eterna — Bilingual Beauty E-commerce',
-        description: 'A store in production on its own domain, taking real orders from customers in the Egyptian market in English and Arabic: storefront, cash-on-delivery checkout, order tracking and a full admin panel, with bilingual transactional email from the brand’s domain and structured data for search and AI engines.',
-        longDescription: 'Next.js 16 storefront on an ASP.NET Core 9 API with Clean Architecture and CQRS. Order lifecycle with enforced status transitions and stock reservation that stays correct under concurrent orders. JWT with rotating refresh tokens and reuse detection, MFA and account lockout; a 10-layer security audit of the live stack found and fixed proxy-keyed rate limits, timing-based account enumeration, an open image proxy and unsigned uploads. Canonical and hreflang metadata, JSON-LD, a dynamic sitemap and IndexNow pings; indexed in Google and Bing.',
-        technologies: ['Next.js 16', 'TypeScript', 'Tailwind v4', 'ASP.NET Core 9', 'CQRS', 'PostgreSQL', 'Cloudinary', 'Resend'],
-        category: 'Product',
-        image: '/projects/eterna.jpg',
-        demo: 'https://www.eternaeg.com',
-        featured: true,
+        title: 'Eterna',
+        kind: 'Live product',
+        tagline: 'Beauty store for Egypt, in Arabic and English.',
+        summary:
+            'An online beauty store for the Egyptian market, in Arabic and English. Customers order from it every day; the owner runs the whole shop from its admin panel.',
+        role: 'Mine end to end: storefront, admin panel, API, checkout, email, search and hosting.',
+        points: [
+            {
+                title: 'Stock stays right when two people buy the last item',
+                body: 'Stock is reserved when an order is placed, and the database rejects the second of two orders that race for the same item. Orders can only move through allowed steps, so an order cannot be shipped before it is confirmed.',
+            },
+            {
+                title: 'Two languages, one store',
+                body: 'Every page works in English and in right-to-left Arabic. Order confirmations and shipping emails go out in the customer’s language, from the brand’s own domain.',
+            },
+            {
+                title: 'Audited before anyone else looked',
+                body: 'I ran a ten-layer security review of the live stack and fixed what it found: rate limits that counted the proxy instead of the visitor, a login that leaked which emails exist through its timing, an open image proxy and unsigned uploads.',
+            },
+            {
+                title: 'Found by Google and by AI search',
+                body: 'Structured product data, a language tag on every page, a sitemap that updates itself, and instant notices to search engines when the catalogue changes. The store is indexed in Google and Bing.',
+            },
+        ],
+        stack: ['Next.js 16', 'TypeScript', 'Tailwind', 'ASP.NET Core 9', 'PostgreSQL', 'Cloudinary', 'Resend'],
+        link: { href: 'https://www.eternaeg.com', label: 'eternaeg.com' },
     },
     {
-        id: 'saudi-pavement-system',
-        title: 'Saudi Arabia Pavement Management System',
-        description: 'A national pavement and asset management platform for the Ministry of Municipalities and Housing, rolling out across the Kingdom. I work across the stack: the ArcGIS map with condition and asset layers streamed over Server-Sent Events, work orders, a help desk, executive dashboards, security and release tooling.',
-        longDescription: 'Migrated the interactive map from MapLibre to the ArcGIS (Esri) Maps SDK with pavement condition layers (PCI, IRI, FWD, GPR) and 21 asset layers streamed from the API. Cut the asset-summary dashboard query from 36–48 seconds per call by emitting geographic joins only when a filter needs them, over about 4.6 million records. Delivered the work-order and help-desk modules end to end, executive dashboards, centralised anti-forgery handling and role- and amana-scoped permissions, runtime feature flags so one build serves three environments, and nightly black-box QA reports generated with Playwright and API probes.',
-        technologies: ['React', 'TypeScript', 'ASP.NET Core', 'SQL Server', 'ArcGIS Maps SDK', 'Hangfire', 'Playwright'],
-        category: 'Frontend',
-        image: '/projects/saudi-system.jpg',
-        featured: true,
+        id: 'saudi-tech',
+        title: 'A national platform at Saudi-Tech',
+        kind: 'Day job',
+        tagline: 'Pavement and asset platform for a Saudi ministry.',
+        summary:
+            'Since May 2025 I have worked on the pavement and asset management platform of the Saudi Ministry of Municipalities and Housing, used by municipalities across the Kingdom. The work is confidential, so it is described here in words only.',
+        role: 'Full-stack engineer: React and TypeScript on ASP.NET Core and SQL Server.',
+        points: [
+            {
+                title: 'The map',
+                body: 'Moved the map from MapLibre to the ArcGIS Maps SDK, with road-condition layers and 21 asset layers streamed from the API as they load.',
+            },
+            {
+                title: 'A slow dashboard made fast',
+                body: 'The asset summary took 36 to 48 seconds per call over about 4.6 million records. It now joins geography only when a filter needs it.',
+            },
+            {
+                title: 'Whole modules, front to back',
+                body: 'Work orders, with a creation wizard, contractor steps and attachment uploads. A help desk with background email through Microsoft 365. Executive dashboards.',
+            },
+            {
+                title: 'Security and release',
+                body: 'One place for anti-forgery checks, fixes to single sign-on, and permissions by role and by municipality in both the screens and the API. Feature flags let one build serve the ministry, staging and training servers.',
+            },
+            {
+                title: 'Testing that runs every night',
+                body: 'Black-box tests with Playwright and API probes check permissions, data isolation, dashboards, map layers and reports, and produce Word and Excel reports for the team each morning.',
+            },
+        ],
+        stack: ['React', 'TypeScript', 'ASP.NET Core', 'SQL Server', 'ArcGIS Maps SDK', 'Hangfire', 'Playwright'],
     },
     {
-        id: 'trimble-publisher-autoclicker',
-        title: 'Trimble Publisher AI AutoClicker',
-        description: 'Built an EXE automation program integrated with an AI module that operates Trimble Publisher autonomously — detecting light poles in the field data, then auto-filling all required attribute fields including pole height, lamp count, pole type, lamp type, and any recorded defects without manual input.',
-        longDescription: 'A fully autonomous desktop automation tool built in Python and packaged as an EXE. The program connects to an AI detection module that identifies light poles from survey data, then drives Trimble Publisher through simulated input to populate every required field: pole height, number of lamps, pole type, lamp specifications, and defect records. Eliminated hours of repetitive manual data entry for field survey teams, reduced human error in attribute population, and significantly accelerated the data publishing workflow on infrastructure asset projects.',
-        technologies: ['Python', 'PyAutoGUI', 'AI Integration', 'Win32 API', 'PyInstaller', 'Computer Vision'],
-        category: 'Automation',
-        image: '/projects/automation-suite.jpg',
-        featured: true,
+        id: 'engineering-tools',
+        title: 'Tools for engineers',
+        kind: 'Tools',
+        tagline: 'Programs that took manual work off survey and engineering teams.',
+        summary:
+            'Before and alongside the web work, I built many tools for survey and engineering teams. Most shipped as a single program engineers could run without installing anything.',
+        role: 'Built on request from the teams that used them, then kept up as their needs changed.',
+        points: [
+            {
+                title: 'Checking survey data',
+                body: 'Read the raw output of road-survey machines, flagged records that could not be physically right, counted defects by type and severity, and merged large batches into clean files.',
+            },
+            {
+                title: 'Auditing survey files',
+                body: 'Scanned folders of survey files, worked out each file’s date and whether it was usable, and wrote an Excel report of what was where, so nobody started work on a broken file.',
+            },
+            {
+                title: 'Reports that build themselves',
+                body: 'The analysis team assembled a 13-sheet, 13-chart Excel report by hand every cycle. Now it is generated, along with Word reports from the same data.',
+            },
+            {
+                title: 'Desktop software on autopilot',
+                body: 'Drove data-entry software with an AI detection step, so field attributes were filled in by the program instead of typed in by hand.',
+            },
+        ],
+        stack: ['Python', 'pandas', 'openpyxl', 'python-docx', 'PyInstaller'],
     },
     {
-        id: '3d-web-designs',
-        title: 'Interactive 3D Web Experiences',
-        description: 'Designing and developing modern web interfaces that integrate interactive 3D elements and immersive visual experiences. Building creative front-end designs using React and Three.js to deliver engaging and visually dynamic user interfaces.',
-        longDescription: 'Portfolio of interactive 3D web designs showcasing advanced frontend skills. Includes particle systems, animated geometries, interactive environments, and immersive user experiences using Three.js, React Three Fiber, and modern web technologies.',
-        technologies: ['React', 'Three.js', 'React Three Fiber'],
-        category: 'Frontend',
-        image: '/projects/3d-designs.jpg',
-        demo: '/three-lab',
-        featured: true,
-    },
-    {
-        id: 'pavement-dashboard',
-        title: 'Pavement Data Visualization Dashboard',
-        description: 'Real-time dashboard for analyzing pavement condition data',
-        longDescription: 'Interactive dashboard displaying friction values, crack density, and structural data. Features real-time filtering, chart visualization, and data export capabilities.',
-        technologies: ['React', 'Next.js', 'Recharts', 'TypeScript', 'SQL'],
-        category: 'Frontend',
-        image: '/projects/dashboard.jpg',
-        demo: '/dashboard',
-        featured: true,
-    },
-    {
-        id: 'gis-viewer',
-        title: 'Infrastructure GIS Viewer',
-        description: 'Interactive map for visualizing infrastructure survey data',
-        longDescription: 'Web-based GIS platform with layer management, spatial queries, and data visualization. Supports multiple data formats and real-time updates.',
-        technologies: ['React', 'MapboxGL', 'Next.js', 'TypeScript'],
-        category: 'GIS',
-        image: '/projects/gis-viewer.jpg',
-        demo: '/map-demo',
-        featured: false,
-    },
-    {
-        id: 'lcms-data-analysis',
-        title: 'LCMS Data Analysis & Quality Control Tool',
-        description: 'Python tool that ingests raw output from LCMS (Laser Crack Measurement System) machines, validates every record, separates correct defect data from erroneous entries, verifies area, length, and width values, counts distress occurrences, and merges large batches of files — cutting what would take days of manual review down to minutes.',
-        longDescription: 'Built to handle the messy reality of LCMS machine output, this tool loads and merges large volumes of raw survey files, then runs structured validation logic to flag and separate wrong data from correct records. It checks that defect geometries (area, length, width) are physically plausible, counts distress occurrences by type and severity, and consolidates everything into clean, engineer-ready datasets. Replaced weeks of manual spreadsheet work with a single automated run. Handles edge cases specific to LCMS output formats and produces clear reports distinguishing valid from invalid records.',
-        technologies: ['Python', 'Pandas', 'NumPy', 'OpenPyXL', 'Data Validation'],
-        category: 'Python',
-        image: '/projects/lcms.jpg',
-        featured: true,
-    },
-    {
-        id: 'lcms-file-manager',
-        title: 'LCMS File Inspector & Report Extractor EXE',
-        description: 'Desktop EXE tool that scans directories of LCMS survey files, identifies each file\'s recorded date, classifies files as working or failed, pinpoints their storage locations, tallies file counts by status, and exports a structured Excel report — giving engineers an instant overview of which data is usable and where it lives.',
-        longDescription: 'Developed as a standalone EXE for non-technical field and office engineers who need to audit large collections of LCMS files without writing any code. The tool recursively scans target folders, reads file metadata and internal headers to extract acquisition dates, applies validation logic to classify each file as working (complete, uncorrupted, in-spec) or failed, records the exact file path and folder location, and produces a formatted Excel report with counts, status flags, and location columns. Saved engineering teams hours of manual file auditing on every project handover and helped prevent engineers from unknowingly working on corrupted or incomplete scan files.',
-        technologies: ['Python', 'Pandas', 'OpenPyXL', 'OS / Pathlib', 'PyInstaller'],
-        category: 'Python',
-        image: '/projects/lcms.jpg',
-        featured: true,
-    },
-    {
-        id: 'python-data-engineering',
-        title: 'Python Data Engineering & Processing Scripts',
-        description: 'Ongoing body of Python work covering the full spectrum of engineering data challenges: splitting oversized datasets, fixing coordinate and formatting issues in GIS exports, detecting and correcting wrong or corrupted records, reorganizing file structures, converting between data formats, and implementing whatever custom data logic the project demands.',
-        longDescription: 'A continuously growing collection of purpose-built Python scripts developed to solve real data problems across multiple engineering projects. Work spans data splitting and merging, coordinate system fixes, format conversions (Excel, CSV, GeoJSON, Shapefiles), duplicate and anomaly detection, field-level data correction, automated file renaming and organization, and bespoke analysis pipelines tailored to specific project requirements. Each script is built fast, targets the exact problem at hand, and is designed to be run repeatedly as new data batches arrive — replacing manual work that would otherwise consume days of an engineer\'s time.',
-        technologies: ['Python', 'Pandas', 'GeoPandas', 'OpenPyXL', 'NumPy', 'JSON', 'CSV'],
-        category: 'Python',
-        image: '/projects/automation-suite.jpg',
-        featured: false,
-    },
-    {
-        id: 'python-automation-tools',
-        title: 'Engineering Data Automation Suite',
-        description: 'Designed and built automation tools using Python to process engineering data and infrastructure datasets. These tools automate complex analysis workflows, reduce manual processing time, and improve accuracy for large pavement and asset datasets. Utilized Python libraries such as Pandas and NumPy to build efficient data pipelines.',
-        longDescription: 'Comprehensive suite of Python automation tools for engineering data processing. Automates complex workflows including data analysis, statistical processing, report generation, and data visualization. Reduced processing time from hours to minutes while improving accuracy and consistency across large infrastructure datasets.',
-        technologies: ['Python', 'Pandas', 'NumPy'],
-        category: 'Automation',
-        image: '/projects/automation-suite.jpg',
-        featured: true,
-    },
-    {
-        id: 'lcms-processor',
-        title: 'LCMS Data Processor',
-        description: 'Automated pipeline for Laser Crack Measurement System data',
-        longDescription: 'Processes raw LCMS data, extracts crack patterns, calculates density metrics, and generates detailed reports with visualization.',
-        technologies: ['Python', 'OpenCV', 'Pandas', 'SciPy'],
-        category: 'Engineering',
-        image: '/projects/lcms.jpg',
-        featured: false,
-    },
-    {
-        id: 'pci-analyzer',
-        title: 'PCI Data Analysis Tool',
-        description: 'Analysis tool for Pavement Condition Index evaluation',
-        longDescription: 'Calculates pavement layer moduli, performs backcalculation, and generates structural capacity reports based on PCI data.',
-        technologies: ['Python', 'NumPy', 'SciPy', 'Matplotlib'],
-        category: 'Engineering',
-        image: '/projects/fwd.jpg',
-        featured: false,
-    },
-    {
-        id: 'survey-automation',
-        title: 'Survey Report Generator',
-        description: 'Automated report generation from multiple survey data sources',
-        longDescription: 'Consolidates data from LCMS, CFT, FWD, and GPR systems into comprehensive engineering reports with charts, maps, and analysis.',
-        technologies: ['Python', 'Pandas', 'ReportLab', 'Jinja2'],
-        category: 'Automation',
-        image: '/projects/reports.jpg',
-        featured: false,
+        id: '3d',
+        title: '3D on the web',
+        kind: 'Craft',
+        tagline: 'Particles, shaders and physics in the browser.',
+        summary:
+            'Particle systems, custom shaders and physics, running in the browser. This is what I build when nobody is asking for anything.',
+        role: 'Personal work.',
+        points: [],
+        stack: ['Three.js', 'React Three Fiber', 'GLSL', 'post-processing'],
+        link: { href: '/three-lab', label: 'Open the 3D Lab' },
     },
 ];
-
-export const categories = ['All', 'Product', 'Frontend', 'GIS', 'Automation', 'Engineering', 'Python'];

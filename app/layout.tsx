@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
-import IntroGate from "@/components/IntroGate";
 import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
@@ -25,9 +24,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mohab Tohamy — frontend engineer",
+  title: "Mohab Tohamy — full-stack engineer",
   description:
-    "I build the unglamorous software that makes engineering data usable. React, Next.js, and a lot of Python. Riyadh → Austria, 2026.",
+    "I build software people pay for: Clinix, a clinic system, and Eterna, an online store. React, .NET and PostgreSQL, with 3D on the web.",
 };
 
 export default function RootLayout({
@@ -38,13 +37,12 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} antialiased min-h-screen grain`}
       >
-        <IntroGate />
         <Navigation />
         <main className="pt-16">{children}</main>
         <footer className="border-t border-[var(--hairline)] mt-24 py-10">
           <div className="max-w-6xl mx-auto px-6 flex flex-wrap gap-6 justify-between items-center text-sm text-[var(--fg-muted)]">
             <span>© {new Date().getFullYear()} Mohab Tohamy</span>
-            <span className="hidden sm:inline">Riyadh — Austria, 2026</span>
+            <span className="hidden sm:inline">Riyadh · open to Austria</span>
             <a
               href="mailto:MohabTohamyAbdallah@gmail.com"
               className="link-arrow"

@@ -29,11 +29,11 @@ export default function ContactPage() {
                 >
                     <Eyebrow className="mb-6">Say hi</Eyebrow>
                     <h1 className="font-display text-5xl md:text-7xl text-[var(--fg)] leading-[0.98] mb-8 max-w-2xl">
-                        Let's talk.
+                        Let’s talk.
                     </h1>
                     <p className="text-lg text-[var(--fg-muted)] leading-relaxed max-w-xl">
-                        Looking for frontend, automation, or full-stack work in Austria.
-                        Open to relocation and visa sponsorship.
+                        I’m looking for a full-stack or frontend role, in Austria or
+                        remote. Email is the fastest way to reach me.
                     </p>
                 </motion.div>
 
@@ -45,7 +45,7 @@ export default function ContactPage() {
                     className="border-t border-[var(--hairline)] pt-12 mb-20"
                 >
                     <p className="text-xs uppercase tracking-[0.18em] text-[var(--fg-dim)] mb-6">
-                        Email — the fastest way
+                        Email
                     </p>
 
                     <a
@@ -97,7 +97,7 @@ export default function ContactPage() {
                         <Eyebrow className="mb-5">Location</Eyebrow>
                         <p className="text-[var(--fg)] mb-1">Riyadh, Saudi Arabia</p>
                         <p className="text-sm text-[var(--fg-muted)] leading-relaxed">
-                            Targeting Austria —<br />Vienna, Linz, St. Pölten
+                            Open to relocating to Austria
                         </p>
                     </div>
 
@@ -137,10 +137,10 @@ export default function ContactPage() {
                         <Eyebrow className="mb-5">Open to</Eyebrow>
                         <ul className="space-y-2.5">
                             {[
-                                'Frontend — React / Next.js / TypeScript',
-                                'Full-stack web applications',
-                                'Python automation & internal tools',
-                                'Visa sponsorship & relocation',
+                                'Full-stack roles: React and .NET',
+                                'Frontend roles: React, Next.js, 3D',
+                                'Relocation with visa sponsorship',
+                                'Remote work',
                             ].map((item) => (
                                 <li key={item} className="flex gap-3 text-sm text-[var(--fg-muted)]">
                                     <span className="text-[var(--accent)] shrink-0 mt-0.5">—</span>
@@ -163,7 +163,7 @@ export default function ContactPage() {
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
                     </span>
                     <p className="text-xs uppercase tracking-[0.18em] text-[var(--fg-dim)]">
-                        Available for new opportunities — 2026
+                        Open to new roles
                     </p>
                 </motion.div>
 

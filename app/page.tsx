@@ -1,26 +1,30 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { Button, Eyebrow } from '@/components/UI';
 import { projects } from '@/data/projects';
-import { skills } from '@/data/experience';
+
+const HeroRing = dynamic(() => import('@/components/HeroRing'), { ssr: false });
+
+const EMAIL = 'MohabTohamyAbdallah@gmail.com';
 
 export default function HomePage() {
-  // The four that say the most: two products I own end to end, the ministry platform, the 3D work.
-  const featured = ['clinix', 'eterna', 'saudi-pavement-system', '3d-web-designs']
-    .map((id) => projects.find((p) => p.id === id))
-    .filter((p): p is (typeof projects)[number] => Boolean(p));
-  const topSkills = skills.slice(0, 9);
+  const live = projects.filter((p) => p.kind === 'Live product');
+  const more = projects.filter((p) => p.kind !== 'Live product');
 
   return (
     <>
       {/* Hero */}
-      <section className="px-6 pt-24 pb-28 md:pt-36 md:pb-36">
-        <div className="max-w-6xl mx-auto">
+      <section className="relative overflow-hidden px-6 pt-24 pb-24 md:pt-36 md:pb-32">
+        <div className="absolute inset-y-0 -end-[30%] w-[90%] md:-end-[10%] md:w-[60%] opacity-70">
+          <HeroRing />
+        </div>
+        <div className="relative max-w-6xl mx-auto">
           <Eyebrow className="mb-8">
-            Full-stack engineer · Riyadh → Austria, 2026
+            Full-stack engineer · Riyadh · open to relocating to Austria
           </Eyebrow>
           <motion.h1
             initial={{ opacity: 0, y: 16 }}
@@ -28,38 +32,45 @@ export default function HomePage() {
             transition={{ duration: 0.6, ease: 'easeOut' }}
             className="font-display text-5xl md:text-7xl lg:text-[88px] text-[var(--fg)] leading-[0.98] mb-8 max-w-4xl"
           >
-            I build production systems end to end, and ship products people
-            run their day on.
+            I build software people pay for.
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
-            className="text-lg md:text-xl text-[var(--fg-muted)] max-w-2xl leading-relaxed mb-10"
+            className="text-lg md:text-xl text-[var(--fg-muted)] max-w-2xl leading-relaxed mb-12"
           >
-            React and TypeScript on ASP.NET Core and PostgreSQL. By day, a national
-            pavement and asset platform for a Saudi ministry. On my own, two live
-            products: Clinix, a clinic SaaS doctors run their consultations on,
-            and Eterna, a bilingual store on its own domain. I work with AI agents
-            every day, and nothing they write ships until it is tested. Currently in
-            Saudi Arabia. Moving to Austria in 2026 —
-            {/*my closestfriends are in St. Pölten and*/} the engineering scene there is
-            genuinely good.
+            Two products of my own that people use every day. A national platform for
+            a Saudi ministry by day. 3D on the web for fun.
           </motion.p>
+
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
-            className="flex flex-wrap gap-3"
+            className="grid sm:grid-cols-2 gap-3 max-w-3xl"
           >
-            <Button href="/projects" variant="primary">
-              See recent work
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-            <Button href="/contact" variant="ghost">
-              Get in touch
-              <ArrowUpRight className="w-4 h-4" />
-            </Button>
+            {live.map((p) => (
+              <Link
+                key={p.id}
+                href={`/projects#${p.id}`}
+                className="group block border border-[var(--hairline-strong)] rounded-md p-5 bg-[var(--bg)]/70 backdrop-blur-sm hover:border-[var(--accent)] transition-colors"
+              >
+                <span className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[#7FB38A] mb-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#7FB38A]" />
+                  live · {p.link?.label}
+                </span>
+                <span className="flex items-baseline justify-between gap-3">
+                  <span className="font-display text-3xl text-[var(--fg)] group-hover:text-[var(--accent)] transition-colors">
+                    {p.title}
+                  </span>
+                  <ArrowRight className="w-4 h-4 shrink-0 text-[var(--fg-dim)] group-hover:text-[var(--accent)] transition-colors" />
+                </span>
+                <span className="block text-sm text-[var(--fg-muted)] leading-relaxed mt-2">
+                  {p.tagline}
+                </span>
+              </Link>
+            ))}
           </motion.div>
         </div>
       </section>
@@ -68,66 +79,35 @@ export default function HomePage() {
         <div className="divider" />
       </div>
 
-      {/* Recent work — numbered list */}
+      {/* The rest of the work */}
       <section className="px-6 py-24">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-baseline justify-between mb-12">
-            <Eyebrow>Recent</Eyebrow>
+            <Eyebrow>Also</Eyebrow>
             <Link href="/projects" className="link-arrow text-sm">
               All work
               <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
           </div>
           <ul className="border-t border-[var(--hairline)]">
-            {featured.map((p, i) => {
-              const href = p.demo || `/projects`;
-              const isExternal = href.startsWith('http');
-              const Wrapper = isExternal
-                ? ({ children }: { children: React.ReactNode }) => (
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group grid grid-cols-12 gap-4 py-7 items-baseline hover:bg-[var(--bg-elevated)]/40 -mx-4 px-4 rounded-md transition-colors"
-                  >
-                    {children}
-                  </a>
-                )
-                : ({ children }: { children: React.ReactNode }) => (
-                  <Link
-                    href={href}
-                    className="group grid grid-cols-12 gap-4 py-7 items-baseline hover:bg-[var(--bg-elevated)]/40 -mx-4 px-4 rounded-md transition-colors"
-                  >
-                    {children}
-                  </Link>
-                );
-
-              return (
-                <motion.li
-                  key={p.id}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-50px' }}
-                  transition={{ delay: i * 0.05 }}
-                  className="border-b border-[var(--hairline)]"
+            {more.map((p) => (
+              <li key={p.id} className="border-b border-[var(--hairline)]">
+                <Link
+                  href={p.id === '3d' ? '/three-lab' : `/projects#${p.id}`}
+                  className="group grid md:grid-cols-12 gap-2 md:gap-4 py-7 items-baseline hover:bg-[var(--bg-elevated)]/40 -mx-4 px-4 rounded-md transition-colors"
                 >
-                  <Wrapper>
-                    <span className="col-span-2 md:col-span-1 font-mono text-sm text-[var(--fg-dim)] tabular-nums self-center">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <span className="col-span-10 md:col-span-7 font-display text-2xl md:text-3xl text-[var(--fg)] group-hover:text-[var(--accent)] transition-colors leading-tight">
-                      {p.title}
-                    </span>
-                    <span className="hidden md:block md:col-span-3 text-sm text-[var(--fg-muted)] self-center">
-                      {p.category}
-                    </span>
-                    <span className="hidden md:flex md:col-span-1 justify-end self-center">
-                      <ArrowUpRight className="w-5 h-5 text-[var(--fg-dim)] group-hover:text-[var(--accent)] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
-                    </span>
-                  </Wrapper>
-                </motion.li>
-              );
-            })}
+                  <span className="md:col-span-2 font-mono text-xs uppercase tracking-[0.14em] text-[var(--fg-dim)]">
+                    {p.kind}
+                  </span>
+                  <span className="md:col-span-4 font-display text-2xl md:text-3xl text-[var(--fg)] group-hover:text-[var(--accent)] transition-colors leading-tight">
+                    {p.title}
+                  </span>
+                  <span className="md:col-span-6 text-sm text-[var(--fg-muted)] leading-relaxed">
+                    {p.tagline}
+                  </span>
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </section>
@@ -136,135 +116,39 @@ export default function HomePage() {
         <div className="divider" />
       </div>
 
-      {/* What I do */}
+      {/* How I work, short */}
       <section className="px-6 py-24">
         <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-12">
           <div className="md:col-span-4">
-            <Eyebrow>What I do</Eyebrow>
-            <p className="text-[var(--fg-muted)] mt-3 max-w-xs">
-              Six things I do well.
-            </p>
+            <Eyebrow>How I work</Eyebrow>
           </div>
-          <div className="md:col-span-8 space-y-10">
-            {[
-              {
-                title: 'Products, end to end',
-                body: 'From the first screen to the domain, the database and the deploy pipeline. Clinix and Eterna are mine: designed, built, secured and launched, with real people using them every day.',
-              },
-              {
-                title: 'Frontend engineering',
-                body: 'React + Next.js + TypeScript. Dashboards, asset-management modules, internal tools. Complex state, async data, API errors handled properly. I care about the boring parts — loading states, empty states, the thing that breaks at 4pm on Friday.',
-              },
-              {
-                title: 'API & backend integration',
-                body: 'Wiring React frontends to ASP.NET Core and REST APIs, backed by SQL Server and PostgreSQL. Refactoring legacy code so it scales instead of rotting, and keeping performance honest as features pile up.',
-              },
-              {
-                title: 'Python automation',
-                body: 'Standalone EXE tools that field engineers can use without touching code. Data-validation pipelines for survey output. The kind of code that turns a week of manual work into one click.',
-              },
-              {
-                title: 'AI-assisted engineering',
-                body: 'Agents with project rules and skills I write, memory that survives across machines, and teams of agents that plan, build and review. They do the typing; tests, reports and my sign-off decide what ships.',
-              },
-              {
-                title: '3D & motion on the web',
-                body: 'Three.js and React Three Fiber: GPU particle systems, custom GLSL shaders, physics. The 3D Lab on this site is the proof — open it.',
-              },
-              {
-                title: 'GIS & geospatial',
-                body: 'Leaflet, MapLibre, GeoPandas. Map visualization, coordinate fixes, format conversion, layer management. Most of my web work has a map in it somewhere.',
-              },
-            ].map((s, i) => (
-              <motion.div
-                key={s.title}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-30px' }}
-                transition={{ delay: i * 0.05 }}
-                className="border-l border-[var(--hairline)] pl-6"
-              >
-                <h3 className="font-display text-2xl text-[var(--fg)] mb-2">
-                  {s.title}
-                </h3>
-                <p className="text-[var(--fg-muted)] leading-relaxed">
-                  {s.body}
-                </p>
-              </motion.div>
-            ))}
+          <div className="md:col-span-8">
+            <p className="font-display text-3xl md:text-4xl text-[var(--fg)] leading-tight mb-6">
+              I work with a team of AI agents. They write most of the code. Tests,
+              reports and my review decide what ships.
+            </p>
+            <p className="text-[var(--fg-muted)] leading-relaxed mb-8 max-w-2xl">
+              That is how one person built and runs two live products alongside a
+              full-time job. The setup took real work: rules, memory that follows me
+              between machines, and checks that catch what the agents get wrong.
+            </p>
+            <Button href="/how-i-work" variant="ghost">
+              See the setup
+              <ArrowRight className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="divider" />
-      </div>
-
-      {/* Tools */}
-      <section className="px-6 py-24">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-12">
-          <div className="md:col-span-4">
-            <Eyebrow>Tools I reach for</Eyebrow>
-            <p className="text-[var(--fg-muted)] mt-3 max-w-xs">
-              Day to day. The list is shorter than most portfolios — it's only
-              what I'd actually defend in a code review.
-            </p>
-          </div>
-          <div className="md:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-x-8 gap-y-1">
-            {topSkills.map((s) => (
-              <div
-                key={s.name}
-                className="flex items-baseline justify-between border-b border-[var(--hairline)] py-3"
-              >
-                <span className="text-[var(--fg)]">{s.name}</span>
-                <span className="font-mono text-xs text-[var(--fg-dim)] tabular-nums">
-                  {s.level}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="divider" />
-      </div>
-
-      {/* Austria */}
-      <section className="px-6 py-24">
-        <div className="max-w-3xl mx-auto">
-          <Eyebrow className="mb-6">Why Austria</Eyebrow>
-          {/* <p className="font-display text-3xl md:text-4xl text-[var(--fg)] leading-tight mb-8">
-            My closest friends grew up in St. Pölten. We've been waiting years
-            to live in the same place again.
-          </p> */}
-          <div className="space-y-4 text-[var(--fg-muted)] leading-relaxed mb-8">
-            <p>
-              {/*  That's the real reason. */}The professional reason — Austria has
-              serious engineering software companies and a frontend scene that
-              takes craft seriously, which is a good fit for what I do.
-            </p>
-            <p>
-              Open to relocation and visa sponsorship. Targeting roles in
-              Vienna, Linz, or St. Pölten.
-            </p>
-          </div>
-          <Link href="/about" className="link-arrow">
-            More about me
-            <ArrowUpRight className="w-4 h-4" />
-          </Link>
-        </div>
-      </section>
-
-      {/* Big email CTA */}
+      {/* Contact */}
       <section className="px-6 py-32 border-t border-[var(--hairline)]">
         <div className="max-w-6xl mx-auto text-center">
-          <Eyebrow className="mb-6">Get in touch</Eyebrow>
+          <Eyebrow className="mb-6">Hiring, or building something?</Eyebrow>
           <a
-            href="mailto:MohabTohamyAbdallah@gmail.com"
+            href={`mailto:${EMAIL}`}
             className="font-display text-3xl sm:text-5xl lg:text-7xl text-[var(--fg)] hover:text-[var(--accent)] transition-colors inline-flex items-baseline gap-3 break-all"
           >
-            MohabTohamyAbdallah@gmail.com
+            {EMAIL}
             <ArrowUpRight className="w-6 h-6 sm:w-10 sm:h-10 lg:w-14 lg:h-14 shrink-0" />
           </a>
         </div>

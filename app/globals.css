@@ -10,10 +10,7 @@
 }
 
 svg,
-svg *,
-.recharts-wrapper,
-.recharts-wrapper *,
-.recharts-surface {
+svg * {
   outline: none !important;
   -webkit-tap-highlight-color: transparent !important;
   user-select: none;
@@ -124,31 +121,6 @@ html {
 }
 .glass:hover {
   background: rgba(26, 24, 18, 0.78);
-}
-
-/* Map popup */
-.maplibregl-popup-content {
-  background: var(--bg-elevated) !important;
-  color: var(--fg) !important;
-  border: 1px solid var(--hairline) !important;
-  border-radius: 8px !important;
-  padding: 0 !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
-}
-.maplibregl-popup-close-button {
-  color: var(--fg) !important;
-  font-size: 18px !important;
-  padding: 4px 8px !important;
-  right: 4px !important;
-  top: 4px !important;
-}
-.maplibregl-popup-close-button:hover {
-  background-color: rgba(255, 255, 255, 0.06) !important;
-  border-radius: 4px !important;
-}
-.maplibregl-popup-tip {
-  border-top-color: var(--bg-elevated) !important;
-  border-bottom-color: var(--bg-elevated) !important;
 }
 
 /* Subtle film grain — gives the warm-black depth */

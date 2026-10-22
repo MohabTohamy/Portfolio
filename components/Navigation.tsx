@@ -8,12 +8,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const nav = [
     { label: 'work', href: '/projects' },
-    { label: 'tools', href: '/tools' },
-    { label: 'map', href: '/map-demo' },
-    { label: 'dashboard', href: '/dashboard' },
+    { label: 'how I work', href: '/how-i-work' },
     { label: '3d lab', href: '/three-lab' },
     { label: 'about', href: '/about' },
-    { label: 'say hi', href: '/contact' },
+    { label: 'contact', href: '/contact' },
 ];
 
 export default function Navigation() {

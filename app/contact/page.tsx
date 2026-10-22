@@ -32,8 +32,8 @@ export default function ContactPage() {
                         Let’s talk.
                     </h1>
                     <p className="text-lg text-[var(--fg-muted)] leading-relaxed max-w-xl">
-                        I’m looking for a full-stack or frontend role, with relocation or
-                        remote. Email is the fastest way to reach me.
+                        I’m looking for a full-stack or frontend role, and I’m open to relocate.
+                        Email is the fastest way to reach me.
                     </p>
                 </motion.div>
 
@@ -97,7 +97,7 @@ export default function ContactPage() {
                         <Eyebrow className="mb-5">Location</Eyebrow>
                         <p className="text-[var(--fg)] mb-1">Riyadh, Saudi Arabia</p>
                         <p className="text-sm text-[var(--fg-muted)] leading-relaxed">
-                            Open to relocating, especially within Europe, or remote
+                            Open to relocate
                         </p>
                     </div>
 
@@ -139,8 +139,7 @@ export default function ContactPage() {
                             {[
                                 'Full-stack roles: React and .NET',
                                 'Frontend roles: React, Next.js, 3D',
-                                'Relocation with visa sponsorship',
-                                'Remote work',
+                                'Open to relocate',
                             ].map((item) => (
                                 <li key={item} className="flex gap-3 text-sm text-[var(--fg-muted)]">
                                     <span className="text-[var(--accent)] shrink-0 mt-0.5">—</span>

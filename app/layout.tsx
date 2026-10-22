@@ -60,7 +60,7 @@ export default function RootLayout({
         <footer className="border-t border-[var(--hairline)] mt-24 py-10">
           <div className="max-w-6xl mx-auto px-6 flex flex-wrap gap-6 justify-between items-center text-sm text-[var(--fg-muted)]">
             <span>© {new Date().getFullYear()} Mohab Tohamy</span>
-            <span className="hidden sm:inline">Riyadh · open to relocation</span>
+            <span className="hidden sm:inline">Riyadh · open to relocate</span>
             <a
               href="mailto:MohabTohamyAbdallah@gmail.com"
               className="link-arrow"

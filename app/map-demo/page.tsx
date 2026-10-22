@@ -114,13 +114,47 @@ export default function MapDemoPage() {
         setTimeout(() => setToast(null), 3500);
     };
 
+    // The sample is generated in the browser from made-up points, so no survey data ever ships
+    // with the site. Same columns as a real LCMS export, so the import path is exercised for real.
     const handleDownloadExcel = () => {
-        const link = document.createElement('a');
-        link.href = '/MapTestFile.xlsx';
-        link.download = 'MapTestFile.xlsx';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const types = [
+            ['Long and Trans Cracking', 1],
+            ['Alligator Cracking', 2],
+            ['Potholes', 13],
+            ['Patching', 11],
+            ['Rutting', 15],
+        ] as const;
+        const severities = ['Low', 'Medium', 'High'] as const;
+        let seed = 7;
+        const rand = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+        const rows = Array.from({ length: 240 }, (_, i) => {
+            const [name, no] = types[Math.floor(rand() * types.length)];
+            const sev = Math.floor(rand() * 3);
+            const length = Math.round(200 + rand() * 4800);
+            const width = Math.round(5 + rand() * 900);
+            return {
+                SectionCode: `DEMO-${String(Math.floor(i / 20) + 1).padStart(3, '0')}`,
+                lane: ['L1', 'L2', 'R1', 'R2'][Math.floor(rand() * 4)],
+                measDate: '2026-01-15',
+                length_mm: length,
+                width_mm: width,
+                depth_mm: Math.round(rand() * 40),
+                area_m2: Number(((length * width) / 1e6).toFixed(3)),
+                distressNo_PCI: no,
+                distressType_PCI: name,
+                severityNo_PCI: sev + 1,
+                severity_PCI: severities[sev],
+                surveyType: 'Sample',
+                surveyDataSource: 'Synthetic',
+                surveyInspector: 'Demo',
+                latitude: Number((24.69 + rand() * 0.05).toFixed(6)),
+                longitude: Number((46.65 + rand() * 0.06).toFixed(6)),
+                elevation: Math.round(600 + rand() * 30),
+            };
+        });
+        const book = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(book, XLSX.utils.json_to_sheet(rows), 'Distresses');
+        XLSX.writeFile(book, 'sample-distresses.xlsx');
     };
 
     const handleDownloadSample = () => {

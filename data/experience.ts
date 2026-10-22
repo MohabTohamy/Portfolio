@@ -13,19 +13,20 @@ export interface Experience {
 export const experiences: Experience[] = [
     {
         id: 'saudi-tech',
-        title: 'Junior Software Engineer',
+        title: 'Software Engineer (Full-Stack)',
         company: 'Saudi-Tech — Riyadh, Saudi Arabia',
         period: 'May 2025 – Present',
-        description: 'Building and maintaining React-based web applications for enterprise-scale asset and pavement management platforms used in real production environments.',
-        technologies: ['React', 'TypeScript', 'ASP.NET Core', 'C#', 'REST APIs', 'Python', 'GIS Mapping', 'SQL Server'],
+        description: 'PMMS — the national pavement and asset management platform for the Ministry of Municipalities and Housing, rolling out across the amanat of the Kingdom. Full-stack: React and TypeScript on ASP.NET Core and SQL Server.',
+        technologies: ['React', 'TypeScript', 'ASP.NET Core', 'C#', 'SQL Server', 'ArcGIS Maps SDK', 'Hangfire', 'Playwright', 'Python'],
         achievements: [
-            'Develop and ship frontend features including work orders, asset modules, quantity tables, and user management',
-            'Integrate frontend components with ASP.NET Core backend APIs and database-driven services',
-            'Handle async data flows, API error handling, and application state management with Redux',
-            'Build Python automation scripts and standalone EXE tools that streamline engineering workflows',
-            'Implement GIS-based map visualization and spatial data features as part of the application UI',
-            'Collaborate with backend developers, analysts, and stakeholders to translate requirements into working software',
-            'Manage application deployment and publishing to IIS production servers',
+            'Migrated the interactive map from MapLibre to the ArcGIS (Esri) Maps SDK: pavement condition layers (PCI, IRI, FWD, GPR) and 21 asset layers streamed from the API over Server-Sent Events',
+            'Cut the asset-summary dashboard query from 36–48 s per call by emitting geographic joins only when a filter needs them, over ~4.6M records',
+            'Built the work-order module across both tiers — creation wizard, contractor lifecycle, attachments with live upload progress — and fixed a request storm with caching and bulk endpoints',
+            'Delivered a help-desk module end to end, with background email through Hangfire and Microsoft 365',
+            'Built executive dashboards and automated the analysis team’s 13-sheet, 13-chart Excel report',
+            'Centralised anti-forgery handling, fixed SSO/OIDC issues, enforced role- and amana-scoped permissions in the UI and the API',
+            'Introduced runtime feature flags so one build serves the ministry, staging and training servers',
+            'Built nightly black-box QA with Playwright and API probes, producing Word and Excel reports',
         ],
     },
     {
@@ -67,6 +68,7 @@ export const skills: Skill[] = [
     { name: 'React.js', level: 88, category: 'Frontend' },
     { name: 'TypeScript', level: 82, category: 'Frontend' },
     { name: 'Next.js', level: 80, category: 'Frontend' },
+    { name: 'Three.js / React Three Fiber', level: 80, category: 'Frontend' },
     { name: 'Tailwind CSS', level: 90, category: 'Frontend' },
 
     // Backend & Data
@@ -81,6 +83,8 @@ export const skills: Skill[] = [
     { name: 'GIS & Map Visualization', level: 75, category: 'Engineering' },
 
     // Tools
+    { name: 'AI agents (Claude Code)', level: 90, category: 'Tools' },
+    { name: 'Flutter', level: 60, category: 'Frontend' },
     { name: 'Git & GitHub', level: 85, category: 'Tools' },
     { name: 'IIS Deployment', level: 75, category: 'Tools' },
     { name: 'VS Code / Visual Studio', level: 90, category: 'Tools' },

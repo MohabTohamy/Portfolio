@@ -8,7 +8,10 @@ import { projects } from '@/data/projects';
 import { skills } from '@/data/experience';
 
 export default function HomePage() {
-  const featured = projects.filter((p) => p.featured).slice(0, 4);
+  // The four that say the most: two products I own end to end, the ministry platform, the 3D work.
+  const featured = ['clinix', 'eterna', 'saudi-pavement-system', '3d-web-designs']
+    .map((id) => projects.find((p) => p.id === id))
+    .filter((p): p is (typeof projects)[number] => Boolean(p));
   const topSkills = skills.slice(0, 9);
 
   return (
@@ -17,7 +20,7 @@ export default function HomePage() {
       <section className="px-6 pt-24 pb-28 md:pt-36 md:pb-36">
         <div className="max-w-6xl mx-auto">
           <Eyebrow className="mb-8">
-            Frontend engineer · Riyadh → Austria, 2026
+            Full-stack engineer · Riyadh → Austria, 2026
           </Eyebrow>
           <motion.h1
             initial={{ opacity: 0, y: 16 }}
@@ -25,8 +28,8 @@ export default function HomePage() {
             transition={{ duration: 0.6, ease: 'easeOut' }}
             className="font-display text-5xl md:text-7xl lg:text-[88px] text-[var(--fg)] leading-[0.98] mb-8 max-w-4xl"
           >
-            I build production-grade React frontends that enterprise teams
-            actually run on.
+            I build production systems end to end, and ship products people
+            run their day on.
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 16 }}
@@ -34,10 +37,11 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
             className="text-lg md:text-xl text-[var(--fg-muted)] max-w-2xl leading-relaxed mb-10"
           >
-            React, Next.js, and TypeScript. Dashboards, asset-management systems,
-            and GIS interfaces — wired to ASP.NET Core APIs and built to hold up
-            in real enterprise environments. Plus a lot of Python on the side, for
-            the tools that turn weeks of manual work into one click. Currently in
+            React and TypeScript on ASP.NET Core and PostgreSQL. By day, a national
+            pavement and asset platform for a Saudi ministry. On my own, two live
+            products: Clinix, a clinic SaaS doctors run their consultations on,
+            and Eterna, a bilingual store on its own domain. I work with AI agents
+            every day, and nothing they write ships until it is tested. Currently in
             Saudi Arabia. Moving to Austria in 2026 —
             {/*my closestfriends are in St. Pölten and*/} the engineering scene there is
             genuinely good.
@@ -138,11 +142,15 @@ export default function HomePage() {
           <div className="md:col-span-4">
             <Eyebrow>What I do</Eyebrow>
             <p className="text-[var(--fg-muted)] mt-3 max-w-xs">
-              Four things I get paid to do well.
+              Six things I do well.
             </p>
           </div>
           <div className="md:col-span-8 space-y-10">
             {[
+              {
+                title: 'Products, end to end',
+                body: 'From the first screen to the domain, the database and the deploy pipeline. Clinix and Eterna are mine: designed, built, secured and launched, with real people using them every day.',
+              },
               {
                 title: 'Frontend engineering',
                 body: 'React + Next.js + TypeScript. Dashboards, asset-management modules, internal tools. Complex state, async data, API errors handled properly. I care about the boring parts — loading states, empty states, the thing that breaks at 4pm on Friday.',
@@ -154,6 +162,14 @@ export default function HomePage() {
               {
                 title: 'Python automation',
                 body: 'Standalone EXE tools that field engineers can use without touching code. Data-validation pipelines for survey output. The kind of code that turns a week of manual work into one click.',
+              },
+              {
+                title: 'AI-assisted engineering',
+                body: 'Agents with project rules and skills I write, memory that survives across machines, and teams of agents that plan, build and review. They do the typing; tests, reports and my sign-off decide what ships.',
+              },
+              {
+                title: '3D & motion on the web',
+                body: 'Three.js and React Three Fiber: GPU particle systems, custom GLSL shaders, physics. The 3D Lab on this site is the proof — open it.',
               },
               {
                 title: 'GIS & geospatial',

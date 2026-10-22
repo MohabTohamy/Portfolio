@@ -6,7 +6,7 @@ export interface Project {
     description: string;
     longDescription: string;
     technologies: string[];
-    category: 'Frontend' | 'GIS' | 'Automation' | 'Engineering' | 'Python';
+    category: 'Product' | 'Frontend' | 'GIS' | 'Automation' | 'Engineering' | 'Python';
     image: string;
     github?: string;
     demo?: string;
@@ -15,11 +15,33 @@ export interface Project {
 
 export const projects: Project[] = [
     {
+        id: 'clinix',
+        title: 'Clinix — Clinic Management SaaS',
+        description: 'A multi-tenant clinic management platform, live and used daily: appointments and live queue, medical records, printed prescriptions with a pharmacy-verifiable QR code, surgical cases with consent forms, billing and expenses, online booking with a WhatsApp code, and a Flutter tablet app that takes the doctor from the waiting list into the whole consultation in one tap.',
+        longDescription: 'Designed, built and launched end to end. Arabic-first React 19 web app and Flutter tablet app on a .NET 10 API and PostgreSQL. Every clinical table is tenant-scoped with global query filters; per-clinic role permissions keep a receptionist out of clinical notes; an append-only audit log records every change and every patient file opened. Clinical search covers a 25,000-medicine Egyptian formulary and 71,000 ICD-10 codes, tolerant of Arabic spelling. Prescriptions, receipts, medical reports and consent forms print exactly on each clinic’s own letterhead. Patients book themselves on the clinic’s page and prove their phone with a one-time WhatsApp code; a background worker sends day-before reminders. Patient media lives on private Cloudflare R2 storage; 60 automated tests run in CI, and every push to main deploys.',
+        technologies: ['React 19', 'TypeScript', '.NET 10', 'PostgreSQL', 'EF Core', 'Flutter', 'WhatsApp Cloud API', 'Cloudflare R2'],
+        category: 'Product',
+        image: '/projects/clinix.jpg',
+        demo: 'https://www.zclinix.com',
+        featured: true,
+    },
+    {
+        id: 'eterna',
+        title: 'Eterna — Bilingual Beauty E-commerce',
+        description: 'A live store on its own domain for the Egyptian market in English and Arabic: storefront, cash-on-delivery checkout, order tracking and a full admin panel, with bilingual transactional email from the brand’s domain and structured data for search and AI engines.',
+        longDescription: 'Next.js 16 storefront on an ASP.NET Core 9 API with Clean Architecture and CQRS. Order lifecycle with enforced status transitions and stock reservation that stays correct under concurrent orders. JWT with rotating refresh tokens and reuse detection, MFA and account lockout; a 10-layer security audit of the live stack found and fixed proxy-keyed rate limits, timing-based account enumeration, an open image proxy and unsigned uploads. Canonical and hreflang metadata, JSON-LD, a dynamic sitemap and IndexNow pings; indexed in Google and Bing.',
+        technologies: ['Next.js 16', 'TypeScript', 'Tailwind v4', 'ASP.NET Core 9', 'CQRS', 'PostgreSQL', 'Cloudinary', 'Resend'],
+        category: 'Product',
+        image: '/projects/eterna.jpg',
+        demo: 'https://www.eternaeg.com',
+        featured: true,
+    },
+    {
         id: 'saudi-pavement-system',
         title: 'Saudi Arabia Pavement Management System',
-        description: 'Developed a complete front-end system for a pavement and asset management platform used in Saudi Arabia. The platform includes advanced dashboards, interactive data visualizations, and modern UI architecture built with React. Focused on performance, usability, and scalable component design while integrating 3D visual elements for better data presentation.',
-        longDescription: 'Comprehensive frontend engineering system for pavement and asset management in Saudi Arabia. Features include real-time data visualization, 3D visual elements, interactive dashboards, and advanced analytics tools. Demonstrates expertise in creating complex engineering platforms with modern web technologies and scalable architecture.',
-        technologies: ['React', 'Next.js', 'TypeScript'],
+        description: 'A national pavement and asset management platform for the Ministry of Municipalities and Housing, rolling out across the Kingdom. I work across the stack: the ArcGIS map with condition and asset layers streamed over Server-Sent Events, work orders, a help desk, executive dashboards, security and release tooling.',
+        longDescription: 'Migrated the interactive map from MapLibre to the ArcGIS (Esri) Maps SDK with pavement condition layers (PCI, IRI, FWD, GPR) and 21 asset layers streamed from the API. Cut the asset-summary dashboard query from 36–48 seconds per call by emitting geographic joins only when a filter needs them, over about 4.6 million records. Delivered the work-order and help-desk modules end to end, executive dashboards, centralised anti-forgery handling and role- and amana-scoped permissions, runtime feature flags so one build serves three environments, and nightly black-box QA reports generated with Playwright and API probes.',
+        technologies: ['React', 'TypeScript', 'ASP.NET Core', 'SQL Server', 'ArcGIS Maps SDK', 'Hangfire', 'Playwright'],
         category: 'Frontend',
         image: '/projects/saudi-system.jpg',
         demo: 'https://pavement-system.vercel.app',
@@ -54,7 +76,7 @@ export const projects: Project[] = [
         technologies: ['React', 'Next.js', 'Recharts', 'TypeScript', 'SQL'],
         category: 'Frontend',
         image: '/projects/dashboard.jpg',
-        demo: 'https://pavement-dashboard.vercel.app',
+        demo: '/dashboard',
         featured: true,
     },
     {
@@ -65,7 +87,7 @@ export const projects: Project[] = [
         technologies: ['React', 'MapboxGL', 'Next.js', 'TypeScript'],
         category: 'GIS',
         image: '/projects/gis-viewer.jpg',
-        demo: 'https://infra-gis.vercel.app',
+        demo: '/map-demo',
         featured: false,
     },
     {
@@ -106,7 +128,6 @@ export const projects: Project[] = [
         technologies: ['Python', 'Pandas', 'NumPy'],
         category: 'Automation',
         image: '/projects/automation-suite.jpg',
-        github: 'https://github.com/mohab/automation-tools',
         featured: true,
     },
     {
@@ -117,7 +138,6 @@ export const projects: Project[] = [
         technologies: ['Python', 'OpenCV', 'Pandas', 'SciPy'],
         category: 'Engineering',
         image: '/projects/lcms.jpg',
-        github: 'https://github.com/mohab/lcms-processor',
         featured: false,
     },
     {
@@ -138,9 +158,8 @@ export const projects: Project[] = [
         technologies: ['Python', 'Pandas', 'ReportLab', 'Jinja2'],
         category: 'Automation',
         image: '/projects/reports.jpg',
-        github: 'https://github.com/mohab/survey-automation',
         featured: false,
     },
 ];
 
-export const categories = ['All', 'Frontend', 'GIS', 'Automation', 'Engineering', 'Python'];
+export const categories = ['All', 'Product', 'Frontend', 'GIS', 'Automation', 'Engineering', 'Python'];

@@ -44,7 +44,6 @@ export const projects: Project[] = [
         technologies: ['React', 'TypeScript', 'ASP.NET Core', 'SQL Server', 'ArcGIS Maps SDK', 'Hangfire', 'Playwright'],
         category: 'Frontend',
         image: '/projects/saudi-system.jpg',
-        demo: 'https://pavement-system.vercel.app',
         featured: true,
     },
     {

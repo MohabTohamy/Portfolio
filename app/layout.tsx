@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
+import IntroGate from "@/components/IntroGate";
 import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
@@ -37,6 +38,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} antialiased min-h-screen grain`}
       >
+        <IntroGate />
         <Navigation />
         <main className="pt-16">{children}</main>
         <footer className="border-t border-[var(--hairline)] mt-24 py-10">

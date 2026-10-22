@@ -47,8 +47,9 @@ const VERT = /* glsl */ `
     vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mvPos;
 
-    float baseSize = mix(2.0, 5.0, hash(aOffset * 31.0));
-    gl_PointSize = baseSize * uPixelRatio * (300.0 / -mvPos.z) * (0.6 + w * 1.5);
+    // Small, sharp grains: large soft points stack into a white blob under additive blending.
+    float baseSize = mix(0.55, 1.6, pow(hash(aOffset * 31.0), 2.0));
+    gl_PointSize = baseSize * uPixelRatio * (260.0 / -mvPos.z) * (0.8 + w * 1.2);
 
     vDepth = -mvPos.z;
     vRing  = ringIdx;
@@ -71,15 +72,15 @@ const FRAG = /* glsl */ `
     vec2 c = gl_PointCoord - 0.5;
     float r = length(c);
     if (r > 0.5) discard;
-    float core  = smoothstep(0.50, 0.00, r);
-    float halo  = smoothstep(0.50, 0.20, r) * 0.5;
+    float core  = pow(smoothstep(0.50, 0.00, r), 2.2);
+    float halo  = smoothstep(0.50, 0.25, r) * 0.18;
 
     vec3 col = mix(uColorA, uColorB, vRing * 0.5);
     col      = mix(col,    uColorC, smoothstep(0.5, 1.5, vRing));
-    col     *= 0.45 + vGlow * 0.5;
+    col     *= 0.55 + vGlow * 0.45;
 
     float depthFade = clamp(1.0 - (vDepth - 6.0) / 30.0, 0.2, 1.0);
-    float alpha = (core * 0.55 + halo) * depthFade;
+    float alpha = (core * 0.85 + halo) * depthFade;
     gl_FragColor = vec4(col, alpha);
   }
 `;
@@ -332,9 +333,9 @@ export default function ParticleRingPage() {
                 />
                 <EffectComposer multisampling={0}>
                     <Bloom
-                        intensity={0.35}
-                        luminanceThreshold={0.35}
-                        luminanceSmoothing={0.4}
+                        intensity={0.22}
+                        luminanceThreshold={0.6}
+                        luminanceSmoothing={0.3}
                     />
                     <ChromaticAberration offset={new THREE.Vector2(0.0006, 0.0010)} />
                     <Vignette eskil={false} offset={0.15} darkness={0.7} />

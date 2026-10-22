@@ -26,6 +26,7 @@ const FABRIC_VERT = /* glsl */ `
 
   varying float vDepth;
   varying vec3  vPos;
+  varying vec2  vXZ;      // flat-space coordinate: the grid is drawn here, so lines follow the curve
 
   // Static gravitational well at a mass position
   float well(vec3 m, vec2 wp) {
@@ -50,21 +51,25 @@ const FABRIC_VERT = /* glsl */ `
 
   void main() {
     vec3 pos = position;
+    // The plane is built in local XY and turned flat by -90° about X, so world (x, z) is local (x, -y)
+    // and local +z points up. Wells are measured in world coordinates, then pushed down along local z.
+    vec2 wp = vec2(pos.x, -pos.y);
 
     // Wells from all 4 masses
     float depth =
-        well(uMasses[0], pos.xz)
-      + well(uMasses[1], pos.xz)
-      + well(uMasses[2], pos.xz)
-      + well(uMasses[3], pos.xz);
+        well(uMasses[0], wp)
+      + well(uMasses[1], wp)
+      + well(uMasses[2], wp)
+      + well(uMasses[3], wp);
 
     // Impact ripples
-    depth += ripple(pos.xz, uImpactTime, uTime);
+    depth += ripple(wp, uImpactTime, uTime);
 
     // Always-on ambient gravitational waves
-    depth += sin(length(pos.xz) * 0.45 - uTime * 0.5) * 0.05;
+    depth += sin(length(wp) * 0.45 - uTime * 0.5) * 0.05;
 
-    pos.y -= depth;
+    vXZ = wp;
+    pos.z -= depth;
     vDepth = depth;
     vPos = pos;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
@@ -74,19 +79,178 @@ const FABRIC_VERT = /* glsl */ `
 const FABRIC_FRAG = /* glsl */ `
   precision highp float;
 
-  uniform vec3 uColorFar;
-  uniform vec3 uColorDeep;
+  uniform vec3  uColorFar;
+  uniform vec3  uColorDeep;
+  uniform vec3  uAccent;
+  uniform float uOrbitR[3];
 
   varying float vDepth;
   varying vec3  vPos;
+  varying vec2  vXZ;
+
+  // Anti-aliased grid line at a given cell size: square cells, no triangle diagonals.
+  float gridLine(vec2 p, float cell) {
+    vec2 g  = p / cell;
+    vec2 fw = fwidth(g);
+    vec2 a  = abs(fract(g - 0.5) - 0.5) / fw;
+    float line = 1.0 - min(min(a.x, a.y), 1.0);
+    // fade lines out where they get denser than a pixel, instead of shimmering
+    return line * (1.0 - smoothstep(0.25, 0.75, max(fw.x, fw.y)));
+  }
 
   void main() {
+    float r = length(vXZ);
+    float minor = gridLine(vXZ, 0.8);
+    float major = gridLine(vXZ, 4.0);
+
+    // the planets' paths, drawn into the fabric itself
+    float orbit = 0.0;
+    float fr = fwidth(r) * 1.4;
+    for (int i = 0; i < 3; i++) {
+      orbit = max(orbit, 1.0 - smoothstep(0.0, fr, abs(r - uOrbitR[i])));
+    }
+
     vec3 col = mix(uColorFar, uColorDeep, smoothstep(0.0, 3.0, vDepth));
-    float brightness = 0.85 + smoothstep(0.0, 2.5, vDepth) * 0.7;
-    float distFade = 1.0 - smoothstep(14.0, 22.0, length(vPos.xz));
-    gl_FragColor = vec4(col * brightness, distFade);
+    col *= 0.75 + smoothstep(0.0, 2.5, vDepth) * 0.8;
+    col = mix(col, uAccent, orbit * 0.8);
+
+    float distFade = 1.0 - smoothstep(11.0, 19.0, r);
+    float alpha = (minor * 0.38 + major * 0.55 + orbit * 0.45) * distFade;
+    // a faint skin inside the wells, so the curvature reads as a surface and not just lines
+    alpha += smoothstep(0.3, 3.5, vDepth) * 0.07 * distFade;
+    gl_FragColor = vec4(col, alpha);
   }
 `;
+
+// ─── Planets: one shader, three worlds, lit from wherever the sun is ─────────
+
+const PLANET_VERT = /* glsl */ `
+  varying vec3 vN;
+  varying vec3 vW;
+  varying vec3 vObj;
+  void main() {
+    vObj = position;
+    vec4 w = modelMatrix * vec4(position, 1.0);
+    vW = w.xyz;
+    vN = normalize(mat3(modelMatrix) * normal);
+    gl_Position = projectionMatrix * viewMatrix * w;
+  }
+`;
+
+const NOISE3 = /* glsl */ `
+  float h3(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
+  float n3(vec3 p) {
+    vec3 i = floor(p), f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(
+      mix(mix(h3(i), h3(i + vec3(1,0,0)), f.x), mix(h3(i + vec3(0,1,0)), h3(i + vec3(1,1,0)), f.x), f.y),
+      mix(mix(h3(i + vec3(0,0,1)), h3(i + vec3(1,0,1)), f.x), mix(h3(i + vec3(0,1,1)), h3(i + vec3(1,1,1)), f.x), f.y),
+      f.z);
+  }
+  float fbm3(vec3 p) { float s = 0.0, a = 0.5; for (int i = 0; i < 5; i++) { s += a * n3(p); p *= 2.02; a *= 0.5; } return s; }
+`;
+
+const PLANET_FRAG = /* glsl */ `
+  precision highp float;
+  uniform vec3  uSun;
+  uniform float uKind;   // 0 ocean world · 1 rust world · 2 gas giant
+  uniform float uTime;
+  varying vec3 vN;
+  varying vec3 vW;
+  varying vec3 vObj;
+  ${NOISE3}
+  void main() {
+    vec3 n = normalize(vN);
+    vec3 L = normalize(uSun - vW);
+    vec3 V = normalize(cameraPosition - vW);
+    float ndl  = dot(n, L);
+    float diff = smoothstep(-0.12, 0.7, ndl);
+    vec3 s = normalize(vObj);
+    vec3 p = s * 2.4;
+    vec3 base;
+    float spec = 0.0;
+
+    if (uKind < 0.5) {
+      float h = fbm3(p * 1.25 + 3.0);
+      vec3 ocean = vec3(0.03, 0.12, 0.30), shallow = vec3(0.05, 0.28, 0.48);
+      vec3 land = vec3(0.20, 0.34, 0.14), dry = vec3(0.52, 0.43, 0.27);
+      base = mix(ocean, shallow, smoothstep(0.40, 0.50, h));
+      float isLand = smoothstep(0.50, 0.53, h);
+      base = mix(base, mix(land, dry, smoothstep(0.58, 0.70, h)), isLand);
+      base = mix(base, vec3(0.92, 0.95, 1.0), smoothstep(0.78, 0.86, abs(s.y)));
+      float cloud = fbm3(p * 2.1 + vec3(uTime * 0.04, 0.0, uTime * 0.02));
+      base = mix(base, vec3(1.0), smoothstep(0.55, 0.78, cloud) * 0.85);
+      vec3 H = normalize(L + V);
+      spec = pow(max(dot(n, H), 0.0), 60.0) * (1.0 - isLand) * 0.6;
+    } else if (uKind < 1.5) {
+      float h = fbm3(p * 1.7 + 11.0);
+      base = mix(vec3(0.38, 0.13, 0.06), vec3(0.80, 0.40, 0.20), h);
+      base = mix(base, vec3(0.24, 0.08, 0.05), smoothstep(0.58, 0.70, fbm3(p * 4.5)) * 0.7);
+      base = mix(base, vec3(0.95, 0.90, 0.85), smoothstep(0.88, 0.94, s.y));
+    } else {
+      float band = s.y * 10.0 + fbm3(p * vec3(1.2, 5.0, 1.2) + vec3(uTime * 0.03, 0.0, 0.0)) * 2.2;
+      base = mix(vec3(0.84, 0.69, 0.46), vec3(0.58, 0.40, 0.24), 0.5 + 0.5 * sin(band));
+      base = mix(base, vec3(0.93, 0.87, 0.72), (0.5 + 0.5 * sin(band * 2.7 + 1.3)) * 0.35);
+    }
+
+    vec3 col = base * (0.035 + diff * 1.15) + vec3(spec);
+    // atmosphere: a thin rim, brightest on the sunlit limb
+    float fres = pow(1.0 - max(dot(n, V), 0.0), 3.0);
+    vec3 atm = uKind < 0.5 ? vec3(0.35, 0.62, 1.0) : (uKind < 1.5 ? vec3(1.0, 0.55, 0.35) : vec3(1.0, 0.86, 0.62));
+    col += atm * fres * (0.08 + smoothstep(-0.25, 0.6, ndl)) * 0.9;
+    gl_FragColor = vec4(col, 1.0);
+  }
+`;
+
+// Rings for the gas giant: banded, see-through, darker on the side away from the sun.
+const RING_VERT = /* glsl */ `
+  varying float vR;
+  varying vec3 vW;
+  void main() {
+    vR = length(position.xy);
+    vec4 w = modelMatrix * vec4(position, 1.0);
+    vW = w.xyz;
+    gl_Position = projectionMatrix * viewMatrix * w;
+  }
+`;
+
+const RING_FRAG = /* glsl */ `
+  precision highp float;
+  uniform float uInner;
+  uniform float uOuter;
+  uniform vec3  uSun;
+  uniform vec3  uCenter;
+  varying float vR;
+  varying vec3  vW;
+  float h(float x) { return fract(sin(x * 91.7) * 43758.5453); }
+  void main() {
+    float t = (vR - uInner) / (uOuter - uInner);
+    float bands = 0.55 + 0.45 * sin(t * 22.0) * sin(t * 7.0 + 1.0);
+    float gap = smoothstep(0.58, 0.60, t) * (1.0 - smoothstep(0.64, 0.66, t));
+    float a = smoothstep(0.0, 0.06, t) * (1.0 - smoothstep(0.92, 1.0, t)) * bands * (1.0 - gap * 0.9);
+    vec3 toSun = normalize(uSun - uCenter);
+    float lit = 0.35 + 0.65 * smoothstep(-0.6, 0.4, dot(normalize(vW - uCenter), toSun));
+    vec3 col = mix(vec3(0.72, 0.60, 0.44), vec3(0.95, 0.88, 0.74), h(floor(t * 40.0))) * lit;
+    gl_FragColor = vec4(col, a * 0.75);
+  }
+`;
+
+// The sun's corona: a soft radial glow painted once into a texture.
+function makeCoronaTexture() {
+    const c = document.createElement('canvas');
+    c.width = c.height = 256;
+    const x = c.getContext('2d')!;
+    const g = x.createRadialGradient(128, 128, 0, 128, 128, 128);
+    g.addColorStop(0.0, 'rgba(255,220,160,1)');
+    g.addColorStop(0.18, 'rgba(255,150,60,0.55)');
+    g.addColorStop(0.45, 'rgba(255,110,40,0.14)');
+    g.addColorStop(1.0, 'rgba(255,90,30,0)');
+    x.fillStyle = g;
+    x.fillRect(0, 0, 256, 256);
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+}
 
 // ─── Plasma sun shader (multi-octave noise for surface granulation) ──────────
 
@@ -153,12 +317,15 @@ const SUN_FRAG = /* glsl */ `
 interface Mass {
     pos: THREE.Vector2;
     baseStrength: number;
-    color: string;
     radius: number;
     orbitRadius: number;
     orbitSpeed: number;
     phase: number;
+    kind: number;   // planet shader: 0 ocean world · 1 rust world · 2 gas giant
 }
+
+// Same falloff as the fabric's vertex shader, so a planet can sit exactly in its own well.
+const wellDepth = (strength: number, dx: number, dz: number) => strength * Math.exp(-(dx * dx + dz * dz) * 0.045);
 
 // ─── easing helpers ───────────────────────────────────────────────────────────
 
@@ -168,23 +335,40 @@ const easeOutCubic   = (x: number) => 1 - Math.pow(1 - x, 3);
 
 function SpacetimeScene() {
     const massesRef = useRef<Mass[]>([
-        // Sun (mass 0): plasma shader, no flat color
-        { pos: new THREE.Vector2(0, 0),  baseStrength: 3.6, color: '#FF8030', radius: 0.95, orbitRadius: 0,  orbitSpeed: 0,    phase: 0    },
-        // Earth-like — deep ocean blue with land
-        { pos: new THREE.Vector2(5, 0),  baseStrength: 0.85, color: '#3B6CD9', radius: 0.36, orbitRadius: 5,  orbitSpeed: 0.40, phase: 0    },
-        // Mars-like — rust red
-        { pos: new THREE.Vector2(-4, 3), baseStrength: 0.7,  color: '#B0432A', radius: 0.30, orbitRadius: 7,  orbitSpeed: 0.25, phase: 2.1  },
-        // Saturn-like — pale gold
-        { pos: new THREE.Vector2(2, -5), baseStrength: 0.8,  color: '#D4A368', radius: 0.45, orbitRadius: 9,  orbitSpeed: 0.15, phase: 4.2  },
+        // Sun (mass 0): plasma shader
+        { pos: new THREE.Vector2(0, 0),  baseStrength: 3.6,  radius: 0.95, orbitRadius: 0, orbitSpeed: 0,    phase: 0,   kind: -1 },
+        // Ocean world, with clouds
+        { pos: new THREE.Vector2(5, 0),  baseStrength: 0.85, radius: 0.42, orbitRadius: 5, orbitSpeed: 0.40, phase: 0,   kind: 0 },
+        // Rust world
+        { pos: new THREE.Vector2(-4, 3), baseStrength: 0.7,  radius: 0.34, orbitRadius: 7, orbitSpeed: 0.25, phase: 2.1, kind: 1 },
+        // Ringed gas giant
+        { pos: new THREE.Vector2(2, -5), baseStrength: 1.0,  radius: 0.62, orbitRadius: 9, orbitSpeed: 0.15, phase: 4.2, kind: 2 },
     ]);
 
     const fabricMatRef = useRef<THREE.ShaderMaterial>(null);
     const sunMatRef    = useRef<THREE.ShaderMaterial>(null);
     const bodyRefs     = useRef<(THREE.Group | null)[]>([]);
-    const lightRefs    = useRef<(THREE.PointLight | null)[]>([]);
-    const sunGlowRef   = useRef<THREE.Mesh>(null);
+    const spinRefs     = useRef<(THREE.Mesh | null)[]>([]);
+    const coronaRef    = useRef<THREE.Sprite>(null);
 
     const sunUniforms = useMemo(() => ({ uTime: { value: 0 } }), []);
+    const sunPos = useMemo(() => new THREE.Vector3(0, 8, 0), []);
+    const corona = useMemo(() => makeCoronaTexture(), []);
+    // one uniform set per planet; they all share the live sun position
+    const planetUniforms = useMemo(
+        () => massesRef.current.map((m) => ({ uSun: { value: sunPos }, uKind: { value: m.kind }, uTime: { value: 0 } })),
+        [sunPos]
+    );
+    const giant = massesRef.current[3];
+    const ringUniforms = useMemo(
+        () => ({
+            uInner: { value: giant.radius * 1.35 },
+            uOuter: { value: giant.radius * 2.3 },
+            uSun: { value: sunPos },
+            uCenter: { value: new THREE.Vector3() },
+        }),
+        [giant.radius, sunPos]
+    );
 
     const uniforms = useMemo(
         () => ({
@@ -198,8 +382,10 @@ function SpacetimeScene() {
                     new THREE.Vector3(0, 0, 0),
                 ],
             },
-            uColorFar:  { value: new THREE.Color('#dfe9ef') },  // near-white grid (flat space)
+            uColorFar:  { value: new THREE.Color('#cfd8e0') },  // cool grey grid (flat space)
             uColorDeep: { value: new THREE.Color('#FFA040') },  // warm orange near deep wells
+            uAccent:    { value: new THREE.Color('#E8704F') },  // orbit paths
+            uOrbitR:    { value: [5, 7, 9] },
         }),
         []
     );
@@ -265,18 +451,12 @@ function SpacetimeScene() {
             sunBody.scale.setScalar(impactPulse);
         }
 
-        const sunLight = lightRefs.current[0];
-        if (sunLight) {
-            sunLight.position.set(0, sunY + 0.5, 0);
-            sunLight.intensity = THREE.MathUtils.lerp(0.4, 4.0, sunStrength / 5);
-        }
+        sunPos.set(0, sunY, 0);
 
-        if (sunGlowRef.current) {
-            sunGlowRef.current.position.set(0, sunY, 0);
-            const glowScale = 1.6 + Math.sin(t * 1.2) * 0.12;
-            const glowVis = THREE.MathUtils.clamp(sunStrength / 5 + 0.25, 0, 1);
-            sunGlowRef.current.scale.setScalar(glowScale * glowVis);
-            (sunGlowRef.current.material as THREE.MeshBasicMaterial).opacity = 0.18 * glowVis;
+        if (coronaRef.current) {
+            coronaRef.current.position.set(0, sunY, 0);
+            const glowVis = THREE.MathUtils.clamp(sunStrength / 5 + 0.45, 0, 1);
+            coronaRef.current.scale.setScalar((5.2 + Math.sin(t * 1.2) * 0.25) * glowVis);
         }
 
         uniforms.uMasses.value[0].set(0, masses[0].baseStrength, 0);
@@ -291,65 +471,64 @@ function SpacetimeScene() {
             const m = masses[i];
             const breath = Math.sin(p * Math.PI * 1.5 + i * 1.2) * 0.18;
             const r = m.orbitRadius * (radiusFactor + breath);
+            uniforms.uOrbitR.value[i - 1] = r;
 
             m.pos.x = Math.cos(t * m.orbitSpeed + m.phase) * r;
             m.pos.y = Math.sin(t * m.orbitSpeed + m.phase) * r;
-
-            const body = bodyRefs.current[i];
-            if (body) {
-                const bob = Math.sin(t * 1.5 + i) * 0.08;
-                body.position.set(m.pos.x, m.radius * 0.6 + bob, m.pos.y);
-                body.scale.setScalar(planetActivation);
-                body.rotation.y = t * 0.8;
-            }
-            const light = lightRefs.current[i];
-            if (light) {
-                light.position.set(m.pos.x, 1.2, m.pos.y);
-                light.intensity = 1.2 * planetActivation;
-            }
-
             uniforms.uMasses.value[i].set(m.pos.x, m.baseStrength * planetActivation, m.pos.y);
         }
 
-        if (fabricMatRef.current) fabricMatRef.current.uniforms.uTime.value = t;
-        if (sunMatRef.current)    sunMatRef.current.uniforms.uTime.value    = t;
+        // Each planet rests in the dent it makes, like a ball on a stretched sheet.
+        for (let i = 1; i < masses.length; i++) {
+            const m = masses[i];
+            let depth = 0;
+            for (let j = 0; j < masses.length; j++) {
+                const mv = uniforms.uMasses.value[j];
+                depth += wellDepth(mv.y, m.pos.x - mv.x, m.pos.y - mv.z);
+            }
+            const body = bodyRefs.current[i];
+            if (body) {
+                body.position.set(m.pos.x, -depth + m.radius * 0.85 * planetActivation, m.pos.y);
+                body.scale.setScalar(planetActivation);
+            }
+            const spin = spinRefs.current[i];
+            if (spin) spin.rotation.y = t * (0.25 + i * 0.08);
+            planetUniforms[i].uTime.value = t;
+            if (i === 3 && body) ringUniforms.uCenter.value.copy(body.position);
+        }
+
+        uniforms.uTime.value = t;
+        if (sunMatRef.current) sunMatRef.current.uniforms.uTime.value = t;
     });
 
     return (
         <>
             <Stars radius={80} depth={50} count={2200} factor={3.5} saturation={0} fade speed={0.2} />
 
-            {/* Spacetime fabric */}
+            {/* Spacetime fabric: a solid sheet with the grid drawn in the shader, not a wireframe */}
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-                <planeGeometry args={[40, 40, 100, 100]} />
+                <planeGeometry args={[40, 40, 220, 220]} />
                 <shaderMaterial
                     ref={fabricMatRef}
                     vertexShader={FABRIC_VERT}
                     fragmentShader={FABRIC_FRAG}
                     uniforms={uniforms}
-                    wireframe
                     transparent
                     depthWrite={false}
+                    side={THREE.DoubleSide}
                 />
             </mesh>
 
-            {/* Sun atmospheric glow (additive halo around the sun) */}
-            <mesh ref={sunGlowRef}>
-                <sphereGeometry args={[1.4, 32, 32]} />
-                <meshBasicMaterial
-                    color="#FF7020"
-                    transparent
-                    opacity={0.18}
-                    blending={THREE.AdditiveBlending}
-                    depthWrite={false}
-                />
-            </mesh>
+            {/* Sun corona */}
+            <sprite ref={coronaRef} scale={5}>
+                <spriteMaterial map={corona} transparent depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
+            </sprite>
 
-            {/* All 4 bodies */}
+            {/* Sun and planets */}
             {massesRef.current.map((m, i) => (
                 <group key={i} ref={(el) => { bodyRefs.current[i] = el; }}>
-                    <mesh>
-                        <sphereGeometry args={[m.radius, i === 0 ? 64 : 32, i === 0 ? 64 : 32]} />
+                    <mesh ref={(el) => { spinRefs.current[i] = el; }} rotation={[0.2 * i, 0, 0.15 * i]}>
+                        <sphereGeometry args={[m.radius, 64, 64]} />
                         {i === 0 ? (
                             <shaderMaterial
                                 ref={sunMatRef}
@@ -359,26 +538,28 @@ function SpacetimeScene() {
                                 toneMapped={false}
                             />
                         ) : (
-                            <meshStandardMaterial
-                                color={m.color}
-                                emissive={m.color}
-                                emissiveIntensity={0.4}
-                                metalness={0.05}
-                                roughness={0.85}
+                            <shaderMaterial
+                                vertexShader={PLANET_VERT}
+                                fragmentShader={PLANET_FRAG}
+                                uniforms={planetUniforms[i]}
                             />
                         )}
                     </mesh>
-                    <pointLight
-                        ref={(el) => { lightRefs.current[i] = el; }}
-                        color={i === 0 ? '#FF9540' : m.color}
-                        intensity={i === 0 ? 2.5 : 1.2}
-                        distance={i === 0 ? 18 : 8}
-                        decay={2}
-                    />
+                    {m.kind === 2 && (
+                        <mesh rotation={[-Math.PI / 2 + 0.45, 0.2, 0]}>
+                            <ringGeometry args={[m.radius * 1.35, m.radius * 2.3, 160, 1]} />
+                            <shaderMaterial
+                                vertexShader={RING_VERT}
+                                fragmentShader={RING_FRAG}
+                                uniforms={ringUniforms}
+                                transparent
+                                depthWrite={false}
+                                side={THREE.DoubleSide}
+                            />
+                        </mesh>
+                    )}
                 </group>
             ))}
-
-            <ambientLight intensity={0.12} />
         </>
     );
 }
@@ -432,10 +613,10 @@ function DepthCard({ children, align = 'right' }: { children: React.ReactNode; a
     return (
         <div className={`h-[150vh] flex items-center px-6 md:px-16 ${justify}`}>
             <motion.div
-                initial={{ opacity: 0, scale: 0.45, filter: 'blur(18px)', y: 60 }}
+                initial={{ opacity: 0, scale: 0.85, filter: 'blur(8px)', y: 40 }}
                 whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)', y: 0 }}
                 viewport={{ once: false, amount: 0.3 }}
-                transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
                 className="max-w-sm pointer-events-auto"
             >
                 {children}
@@ -610,11 +791,12 @@ export default function ThreeLabClassicPage() {
                     </Canvas>
                 </div>
 
-                {/* Cards */}
-                <div className="relative z-10 pointer-events-none">
+                {/* Cards. Pulled up over the sticky canvas so the scene lasts exactly as long as
+                    the cards do; otherwise it scrolls off early and leaves a black gap at the end. */}
+                <div className="relative z-10 pointer-events-none -mt-[100vh]">
 
                     <DepthCard align="right">
-                        <div className="card-editorial p-6 bg-[var(--bg)]/70 backdrop-blur-sm">
+                        <div className="rounded-xl border border-[var(--hairline)] p-6 bg-[var(--bg)]/45 backdrop-blur-md">
                             <p className="font-mono text-xs text-[var(--fg-dim)] uppercase tracking-wider mb-3">
                                 01 — descent
                             </p>
@@ -630,7 +812,7 @@ export default function ThreeLabClassicPage() {
                     </DepthCard>
 
                     <DepthCard align="left">
-                        <div className="card-editorial p-6 bg-[var(--bg)]/70 backdrop-blur-sm">
+                        <div className="rounded-xl border border-[var(--hairline)] p-6 bg-[var(--bg)]/45 backdrop-blur-md">
                             <p className="font-mono text-xs text-[var(--fg-dim)] uppercase tracking-wider mb-3">
                                 02 — impact
                             </p>
@@ -654,7 +836,7 @@ export default function ThreeLabClassicPage() {
 
                     <DepthCard align="center">
                         <Link href="/three-lab/particle-ring" className="group block">
-                            <div className="card-editorial p-8 bg-[var(--bg)]/70 backdrop-blur-sm hover:border-[var(--accent)] transition-colors">
+                            <div className="rounded-xl border border-[var(--hairline)] p-8 bg-[var(--bg)]/45 backdrop-blur-md hover:border-[var(--accent)] transition-colors">
                                 <p className="font-mono text-xs text-[var(--fg-dim)] uppercase tracking-wider mb-3">
                                     aside · 02 / 04
                                 </p>
@@ -674,7 +856,7 @@ export default function ThreeLabClassicPage() {
                     </DepthCard>
 
                     <DepthCard align="right">
-                        <div className="card-editorial p-6 bg-[var(--bg)]/70 backdrop-blur-sm">
+                        <div className="rounded-xl border border-[var(--hairline)] p-6 bg-[var(--bg)]/45 backdrop-blur-md">
                             <p className="font-mono text-xs text-[var(--fg-dim)] uppercase tracking-wider mb-3">
                                 03 — orbit
                             </p>
@@ -688,7 +870,7 @@ export default function ThreeLabClassicPage() {
                             </p>
                             <div className="space-y-2 text-xs font-mono">
                                 {[
-                                    { label: 'fabric segments', val: '100 × 100' },
+                                    { label: 'fabric segments', val: '220 × 220' },
                                     { label: 'masses tracked',  val: '4' },
                                     { label: 'falloff',         val: 'exp(−d² · 0.045)' },
                                     { label: 'wave speed',      val: '5.5 u/sec' },
@@ -704,7 +886,7 @@ export default function ThreeLabClassicPage() {
 
                     <DepthCard align="center">
                         <Link href="/three-lab/futuristic-dashboard" className="group block">
-                            <div className="card-editorial p-8 bg-[var(--bg)]/70 backdrop-blur-sm hover:border-[var(--accent)] transition-colors">
+                            <div className="rounded-xl border border-[var(--hairline)] p-8 bg-[var(--bg)]/45 backdrop-blur-md hover:border-[var(--accent)] transition-colors">
                                 <p className="font-mono text-xs text-[var(--fg-dim)] uppercase tracking-wider mb-3">
                                     aside · 03 / 04
                                 </p>
